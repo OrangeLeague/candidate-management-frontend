@@ -327,7 +327,6 @@ import {
   IconButton,
 } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
-import Cookies from "js-cookie";
 
 const AdminDashboard = () => {
   const [teams, setTeams] = useState([]);
