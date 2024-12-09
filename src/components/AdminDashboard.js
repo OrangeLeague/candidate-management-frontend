@@ -559,7 +559,7 @@ const AdminDashboard = () => {
               setNewTeam({ ...newTeam, password: e.target.value })
             }
             variant="outlined"
-            type="password"
+            // type="password"
             sx={{
               flex: "1 1 300px",
               backgroundColor: "#ffffff",
