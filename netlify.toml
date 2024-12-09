@@ -1,0 +1,16 @@
+[build]
+  # Directory to deploy
+  publish = "build"
+
+  # Command to build the project
+  command = "npm run build"
+
+[dev]
+  # Port used for local development
+  port = 3000
+
+[[redirects]]
+  # Redirect all requests to index.html (for React Router SPA)
+  from = "/*"
+  to = "/index.html"
+  status = 200
