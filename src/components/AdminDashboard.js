@@ -348,10 +348,10 @@ const AdminDashboard = () => {
   const fetchAdminData = async () => {
     try {
       const teamResponse = await axios.get(
-        "http://localhost:8000/candidates/admin/teams/get-teams"
+        "https://candidate-management-backend-1.onrender.com/candidates/admin/teams/get-teams"
       );
       const candidateResponse = await axios.get(
-        "http://localhost:8000/candidates/admin/candidates/get-candidates"
+        "https://candidate-management-backend-1.onrender.com/candidates/admin/candidates/get-candidates"
       );
       setTeams(teamResponse?.data);
       setCandidates(candidateResponse?.data);
@@ -369,7 +369,7 @@ const AdminDashboard = () => {
   const addTeam = async () => {
     try {
       await axios.post(
-        "http://localhost:8000/candidates/admin/teams/add",
+        "https://candidate-management-backend-1.onrender.com/candidates/admin/teams/add",
         newTeam,
         {
           headers: {
@@ -396,7 +396,7 @@ const AdminDashboard = () => {
       }
 
       await axios.post(
-        "http://localhost:8000/candidates/admin/candidates/add",
+        "https://candidate-management-backend-1.onrender.com/candidates/admin/candidates/add",
         formData,
         {
           headers: {
@@ -421,7 +421,7 @@ const AdminDashboard = () => {
   const deleteTeam = async (id) => {
     try {
       await axios.delete(
-        `http://localhost:8000/candidates/admin/teams/${id}/`,
+        `https://candidate-management-backend-1.onrender.com/candidates/admin/teams/${id}/`,
         {
           headers: {
             "Content-Type": "application/json",
@@ -437,7 +437,7 @@ const AdminDashboard = () => {
   const deleteCandidate = async (id) => {
     try {
       await axios.delete(
-        `http://localhost:8000/candidates/admin/candidates/${id}/`,
+        `https://candidate-management-backend-1.onrender.com/candidates/admin/candidates/${id}/`,
         {
           headers: {
             "Content-Type": "application/json",

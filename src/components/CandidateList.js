@@ -21,7 +21,7 @@ const CandidateList = () => {
 
   const fetchCandidates = async () => {
     try {
-      const response = await axios.get("http://localhost:8000/candidates/", {
+      const response = await axios.get("https://candidate-management-backend-1.onrender.com/candidates/", {
         withCredentials: true, // Ensure the cookie is sent with the request
       });
       setCandidates(response.data);
@@ -42,7 +42,7 @@ const CandidateList = () => {
     const token = localStorage.getItem("access_token"); // Get the JWT token from localStorage
     try {
       await axios.post(
-        `http://localhost:8000/candidates/update_status/${id}/${status}/`,
+        `https://candidate-management-backend-1.onrender.com/candidates/update_status/${id}/${status}/`,
         {},
         {
           headers: {
