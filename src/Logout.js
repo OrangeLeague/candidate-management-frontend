@@ -12,7 +12,7 @@ const Logout = ({ setAuthenticated }) => {
     try {
       // Make a POST request to the backend to handle the logout
       const response = await axios.post(
-        "https://candidate-management-backend-1.onrender.com/logout/",  //http://localhost:8000/candidates/
+        "https://candidate-management-backend-1.onrender.com/candidates/logout/",  //http://localhost:8000/candidates/
         {},
         {
           withCredentials: true, // Ensure the session cookie is sent with the request
