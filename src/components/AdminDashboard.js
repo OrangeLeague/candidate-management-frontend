@@ -348,10 +348,10 @@ const AdminDashboard = () => {
   const fetchAdminData = async () => {
     try {
       const teamResponse = await axios.get(
-        "https://candidate-management-backend-1.onrender.com/candidates/admin/teams/get-teams"
+        "http://localhost:8000/candidates/admin/teams/get-teams"
       );
       const candidateResponse = await axios.get(
-        "https://candidate-management-backend-1.onrender.com/candidates/admin/candidates/get-candidates"
+        "http://localhost:8000/candidates/admin/candidates/get-candidates"
       );
       setTeams(teamResponse?.data);
       setCandidates(candidateResponse?.data);
@@ -369,7 +369,7 @@ const AdminDashboard = () => {
   const addTeam = async () => {
     try {
       await axios.post(
-        "https://candidate-management-backend-1.onrender.com/candidates/admin/teams/add",
+        "http://localhost:8000/candidates/admin/teams/add",
         newTeam,
         {
           headers: {
@@ -396,7 +396,7 @@ const AdminDashboard = () => {
       }
 
       await axios.post(
-        "https://candidate-management-backend-1.onrender.com/candidates/admin/candidates/add",
+        "http://localhost:8000/candidates/admin/candidates/add",
         formData,
         {
           headers: {
@@ -421,7 +421,7 @@ const AdminDashboard = () => {
   const deleteTeam = async (id) => {
     try {
       await axios.delete(
-        `https://candidate-management-backend-1.onrender.com/candidates/admin/teams/${id}/`,
+        `http://localhost:8000/candidates/admin/teams/${id}/`,
         {
           headers: {
             "Content-Type": "application/json",
@@ -437,7 +437,7 @@ const AdminDashboard = () => {
   const deleteCandidate = async (id) => {
     try {
       await axios.delete(
-        `https://candidate-management-backend-1.onrender.com/candidates/admin/candidates/${id}/`,
+        `http://localhost:8000/candidates/admin/candidates/${id}/`,
         {
           headers: {
             "Content-Type": "application/json",
@@ -477,12 +477,18 @@ const AdminDashboard = () => {
         variant="h4"
         align="center"
         sx={{
-          marginBottom: "30px",
-          fontWeight: "bold",
-          textShadow: "1px 1px 2px rgba(0, 0, 0, 0.3)",
+          marginBottom: "30px", // Space below the heading
+          fontWeight: "bold", // Bold text
+          fontSize: "42px", // Font size
+          textShadow: "2px 2px 4px rgba(0, 0, 0, 0.4)", // Soft shadow for depth
+          background: "linear-gradient(to right, #4facfe, #00f2fe)", // Gradient color
+          WebkitBackgroundClip: "text", // Clips the gradient to the text
+          color: "transparent", // Makes the text itself transparent to reveal the gradient
+          lineHeight: "50px", // Adjusts the line height for better spacing
+          padding: "10px 0", // Adds padding above and below
         }}
       >
-        Admin Dashboard
+        OLVT Admin Dashboard
       </Typography>
 
       {/* Add Team Section */}
@@ -786,7 +792,27 @@ const AdminDashboard = () => {
                 <TableCell>{candidate.name}</TableCell>
                 <TableCell>{candidate.years_of_experience}</TableCell>
                 <TableCell>{candidate.skillset}</TableCell>
-                <TableCell>{candidate.status}</TableCell>
+                <TableCell>
+                  <div>Status: {candidate.status}</div>
+                  {candidate.rejection_comments && (
+                    <div>
+                      {candidate.rejection_comments.map((comment, index) => (
+                        <>
+                          <h4>Rejection Comments</h4>
+                          <div key={index}>
+                            <strong>Team: {comment.team.name}</strong>
+                            <p>Comment: {comment.comment}</p>
+                            <small>
+                              Created At:{" "}
+                              {new Date(comment.created_at).toLocaleString()}
+                            </small>
+                          </div>
+                        </>
+                      ))}
+                    </div>
+                  )}
+                </TableCell>
+
                 <TableCell>
                   <IconButton
                     color="error"

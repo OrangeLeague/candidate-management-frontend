@@ -7,7 +7,7 @@ import Snackbar from "@mui/material/Snackbar";
 import Alert from "@mui/material/Alert";
 import Box from "@mui/material/Box";
 
-const LoginForm = ({ setAuthenticated }) => {
+const LoginForm = ({ setAuthenticated ,setActiveTeamId,authenticated,onLoginSuccess}) => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -17,7 +17,7 @@ const LoginForm = ({ setAuthenticated }) => {
     e.preventDefault();
     try {
       const response = await axios.post(
-        "https://candidate-management-backend-1.onrender.com/candidates/login/",//  http://localhost:8000/candidates/login/
+        "http://localhost:8000/candidates/login/",//  http://localhost:8000/candidates/login/
         {
           username,
           password,
@@ -27,8 +27,10 @@ const LoginForm = ({ setAuthenticated }) => {
         }
       );
       localStorage.setItem("access_token", response.data.access); // Store JWT in localStorage
+      setActiveTeamId(response?.data?.team_id)
       setAuthenticated(true); // Update authentication state
       setSnackbarOpen(true); // Show success message
+      onLoginSuccess();
     } catch (error) {
       console.error("Login failed", error);
       setError("Invalid username or password.");
