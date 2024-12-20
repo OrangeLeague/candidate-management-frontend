@@ -11,22 +11,14 @@ import {
   Button,
   Typography,
   CircularProgress,
-  Link,
   Box,
   Dialog,
-  DialogActions,
   DialogContent,
   DialogContentText,
   DialogTitle,
   TextField,
   IconButton,
-  RadioGroup,
-  FormControlLabel,
-  Radio,
 } from "@mui/material";
-import { LocalizationProvider } from "@mui/x-date-pickers";
-import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
-import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import Logout from "../Logout";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import DownloadIcon from "@mui/icons-material/Download";
@@ -47,7 +39,7 @@ const CandidateList = ({ activeTeamId, setAuthenticated }) => {
   const [error, setError] = useState("");
   const [selectedTimeSlot, setSelectedTimeSlot] = useState("");
 
-  console.log(timeSlots, "timeSlotsdsdsd");
+  console.log(timeSlots, "timeSlotsdsdsd",selectedDateTime);
   useEffect(() => {
     const fetchTimeSlots = async () => {
       try {
@@ -88,7 +80,7 @@ const CandidateList = ({ activeTeamId, setAuthenticated }) => {
 
   useEffect(() => {
     fetchCandidates();
-  }, [activeTeamId]);
+  }, [activeTeamId,fetchCandidates]);
 
   const handleScheduleInterview = (candidate) => {
     setSelectedCandidate(candidate);
@@ -557,7 +549,6 @@ const CandidateList = ({ activeTeamId, setAuthenticated }) => {
                         sx={{
                           textTransform: "none",
                           borderRadius: "20px",
-                          fontWeight: "bold",
                           background: "white",
                           color: "#F15D27",
                           fontSize: "16px",
