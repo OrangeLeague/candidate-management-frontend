@@ -524,14 +524,14 @@ const CandidateList = ({ activeTeamId, setAuthenticated }) => {
                 <TableCell>
                   <Box sx={{ display: "flex", gap: 1 }}>
                     <IconButton
-                      href={`https://olvtechnologies-cms.netlify.app/${candidate.cv}`}
+                      href={`https://candidate-management-backend-1.onrender.com/${candidate.cv}`}
                       target="_blank"
                       sx={{ color: "#F15D27" }} // Hex code for orange
                     >
                       <VisibilityIcon />
                     </IconButton>
                     <IconButton
-                      href={`https://olvtechnologies-cms.netlify.app/${candidate.cv}`}
+                      href={`https://candidate-management-backend-1.onrender.com/${candidate.cv}`}
                       download
                       sx={{ color: "#F15D27" }} // Hex code for orange
                     >
