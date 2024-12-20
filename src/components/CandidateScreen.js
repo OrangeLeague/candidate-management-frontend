@@ -98,7 +98,7 @@ const CandidateScreen = () => {
     try {
         // POST the data to the Django API
         const response = await axios.post(
-          "http://localhost:8000/candidates/time-slots/bulk-schedule/",
+          "https://candidate-management-backend-1.onrender.com/candidates/time-slots/bulk-schedule/",
           result,
           {
             headers: {

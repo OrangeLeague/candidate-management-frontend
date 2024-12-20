@@ -45,7 +45,7 @@ const CandidateList = ({ activeTeamId, setAuthenticated }) => {
       try {
         // setLoading(true);
         const response = await axios.get(
-          `http://127.0.0.1:8000/candidates/get-candidates/${selectedCandidate?.id}/time-slots/`
+          `https://candidate-management-backend-1.onrender.com/candidates/get-candidates/${selectedCandidate?.id}/time-slots/`
         );
         setTimeSlots(response.data.time_slots || {});
         setError(""); // Clear previous errors if any
@@ -66,7 +66,7 @@ const CandidateList = ({ activeTeamId, setAuthenticated }) => {
 
   const fetchCandidates = useCallback(async () => {
     try {
-      const response = await axios.get("http://127.0.0.1:8000/candidates/", {
+      const response = await axios.get("https://candidate-management-backend-1.onrender.com/candidates/", {
         params: { activeTeamId },
         withCredentials: true,
       });
@@ -96,7 +96,7 @@ const CandidateList = ({ activeTeamId, setAuthenticated }) => {
     const token = localStorage.getItem("access_token");
     try {
       await axios.post(
-        `http://localhost:8000/candidates/update_status/${selectedCandidate.id}/Interview Scheduled/`,
+        `https://candidate-management-backend-1.onrender.com/candidates/update_status/${selectedCandidate.id}/Interview Scheduled/`,
         { scheduled_time: selectedTimeSlot.toString() },
         {
           headers: { Authorization: `Bearer ${token}` },
@@ -126,7 +126,7 @@ const CandidateList = ({ activeTeamId, setAuthenticated }) => {
     const token = localStorage.getItem("access_token");
     try {
       await axios.post(
-        `http://localhost:8000/candidates/update_status/${selectedCandidate.id}/Rejected/`,
+        `https://candidate-management-backend-1.onrender.com/candidates/update_status/${selectedCandidate.id}/Rejected/`,
         { comment: rejectionComment }, // Send the rejection comment to backend
         {
           headers: { Authorization: `Bearer ${token}` },
@@ -145,7 +145,7 @@ const CandidateList = ({ activeTeamId, setAuthenticated }) => {
     const token = localStorage.getItem("access_token");
     try {
       await axios.post(
-        `http://localhost:8000/candidates/update_status/${id}/${status}/`,
+        `https://candidate-management-backend-1.onrender.com/candidates/update_status/${id}/${status}/`,
         {},
         {
           headers: { Authorization: `Bearer ${token}` },
