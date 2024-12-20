@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import axios from "axios";
 import {
   Table,
@@ -64,7 +64,7 @@ const CandidateList = ({ activeTeamId, setAuthenticated }) => {
     }
   }, [selectedCandidate?.id]);
 
-  const fetchCandidates = async () => {
+  const fetchCandidates = useCallback(async () => {
     try {
       const response = await axios.get("http://127.0.0.1:8000/candidates/", {
         params: { activeTeamId },
@@ -76,11 +76,11 @@ const CandidateList = ({ activeTeamId, setAuthenticated }) => {
       console.error("Error fetching candidates:", error);
       setLoading(false);
     }
-  };
+  }, [activeTeamId]); // Dependency array
 
   useEffect(() => {
     fetchCandidates();
-  }, [activeTeamId,fetchCandidates]);
+  }, [fetchCandidates]);
 
   const handleScheduleInterview = (candidate) => {
     setSelectedCandidate(candidate);
