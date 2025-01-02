@@ -76,8 +76,8 @@ const App = () => {
             authenticated ? (
               <>
                 <Header />
-                <Logout setAuthenticated={setAuthenticated} />
-                <AdminDashboard />
+                {/* <Logout setAuthenticated={setAuthenticated} /> */}
+                <AdminDashboard setAuthenticated={setAuthenticated}/>
               </>
             ) : (
               <>

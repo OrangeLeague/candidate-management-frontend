@@ -195,8 +195,7 @@ const CandidateList = ({ activeTeamId, setAuthenticated }) => {
   return (
     <Box
       sx={{
-        padding: "20px",
-        height: "100vh",
+        // height: "100vh",
         backgroundColor: "#e5edf5",
         paddingLeft: "60px",
         paddingRight: "60px",
@@ -463,6 +462,41 @@ const CandidateList = ({ activeTeamId, setAuthenticated }) => {
                 <Typography
                   sx={{ color: "#7E97B8", fontSize: "16px", fontWeight: 700 }}
                 >
+                  Current Company
+                </Typography>
+              </TableCell>
+              <TableCell>
+                <Typography
+                  sx={{ color: "#7E97B8", fontSize: "16px", fontWeight: 700 }}
+                >
+                  Current Location
+                </Typography>
+              </TableCell>
+              <TableCell>
+                <Typography
+                  sx={{ color: "#7E97B8", fontSize: "16px", fontWeight: 700 }}
+                >
+                  Notice Period / LWD
+                </Typography>
+              </TableCell>
+              <TableCell>
+                <Typography
+                  sx={{ color: "#7E97B8", fontSize: "16px", fontWeight: 700 }}
+                >
+                  Qualification
+                </Typography>
+              </TableCell>
+              <TableCell>
+                <Typography
+                  sx={{ color: "#7E97B8", fontSize: "16px", fontWeight: 700 }}
+                >
+                  Vendor
+                </Typography>
+              </TableCell>
+              <TableCell>
+                <Typography
+                  sx={{ color: "#7E97B8", fontSize: "16px", fontWeight: 700 }}
+                >
                   Action
                 </Typography>
               </TableCell>
@@ -524,20 +558,47 @@ const CandidateList = ({ activeTeamId, setAuthenticated }) => {
                 <TableCell>
                   <Box sx={{ display: "flex", gap: 1 }}>
                     <IconButton
-                      href={`https://candidate-management-backend-1.onrender.com${candidate.cv}`}
+                      // href={`https://candidate-management-backend-1.onrender.com${candidate.cv}`}
+                      href={`${candidate.file_url}`}
                       target="_blank"
                       sx={{ color: "#F15D27" }} // Hex code for orange
                     >
                       <VisibilityIcon />
                     </IconButton>
                     <IconButton
-                      href={`https://candidate-management-backend-1.onrender.com${candidate.cv}`}
+                      // href={`https://candidate-management-backend-1.onrender.com${candidate.cv}`}
+                      href={`${candidate.file_url}`}
                       download
                       sx={{ color: "#F15D27" }} // Hex code for orange
                     >
                       <DownloadIcon />
                     </IconButton>
                   </Box>
+                </TableCell>
+                <TableCell
+                  sx={{ color: "#7E97B8", fontSize: "16px", fontWeight: 700 }}
+                >
+                  {candidate.current_company}
+                </TableCell>
+                <TableCell
+                  sx={{ color: "#7E97B8", fontSize: "16px", fontWeight: 700 }}
+                >
+                  {candidate.current_location}
+                </TableCell>
+                <TableCell
+                  sx={{ color: "#7E97B8", fontSize: "16px", fontWeight: 700 }}
+                >
+                  {candidate.notice_period>0 && candidate.notice_period}days
+                </TableCell>
+                <TableCell
+                  sx={{ color: "#7E97B8", fontSize: "16px", fontWeight: 700 }}
+                >
+                  {candidate.qualification}
+                </TableCell>
+                <TableCell
+                  sx={{ color: "#7E97B8", fontSize: "16px", fontWeight: 700 }}
+                >
+                  {candidate.vendor}
                 </TableCell>
                 <TableCell>
                   <Box sx={{ display: "flex", gap: 2 }}>
@@ -596,7 +657,7 @@ const CandidateList = ({ activeTeamId, setAuthenticated }) => {
                             src={rejectImg}
                             alt="select-img"
                             style={{ height: "24px", width: "24px" }}
-                          />
+                          /> 
                           Reject
                         </Button>
                       </>
