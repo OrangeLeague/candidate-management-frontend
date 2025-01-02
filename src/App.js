@@ -2,7 +2,6 @@
 import React, { useState, useEffect } from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import LoginForm from "./LoginForm";
-import Logout from "./Logout";
 import CandidateList from "./components/CandidateList";
 import AdminDashboard from "./components/AdminDashboard";
 import CandidateScreen from "./components/CandidateScreen";
