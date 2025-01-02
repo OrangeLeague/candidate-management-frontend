@@ -650,6 +650,11 @@ const AdminDashboard = ({ setAuthenticated }) => {
         skillset: "",
         status: "Open",
         cv: null,
+        notice_period:"",
+        current_company:"",
+        qualification:"",
+        current_location:"",
+        vendor: "OLVT",
       });
       fetchAdminData();
     } catch (error) {
