@@ -1280,6 +1280,7 @@ const AdminDashboard = ({ setAuthenticated }) => {
             <Table>
               <TableHead>
                 <TableRow>
+                  <TableCell>ID</TableCell>
                   <TableCell>Name</TableCell>
                   <TableCell>Experience</TableCell>
                   <TableCell>Skillset</TableCell>
@@ -1293,6 +1294,7 @@ const AdminDashboard = ({ setAuthenticated }) => {
               <TableBody>
                 {candidates.map((candidate) => (
                   <TableRow key={candidate.id}>
+                    <TableCell>{candidate.id}</TableCell>
                     <TableCell>{candidate.name}</TableCell>
                     <TableCell>{candidate.years_of_experience}</TableCell>
                     <TableCell>{candidate.skillset}</TableCell>
