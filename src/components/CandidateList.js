@@ -127,7 +127,7 @@ const CandidateList = ({ activeTeamId, setAuthenticated }) => {
     try {
       await axios.post(
         `https://candidate-management-backend-1.onrender.com/candidates/update_status/${selectedCandidate.id}/Rejected/`,
-        { comment: rejectionComment }, // Send the rejection comment to backend
+        { comment: rejectionComment ,activeTeamId}, // Send the rejection comment to backend
         {
           headers: { Authorization: `Bearer ${token}` },
           withCredentials: true,
