@@ -650,10 +650,10 @@ const AdminDashboard = ({ setAuthenticated }) => {
         skillset: "",
         status: "Open",
         cv: null,
-        notice_period:"",
-        current_company:"",
-        qualification:"",
-        current_location:"",
+        notice_period: "",
+        current_company: "",
+        qualification: "",
+        current_location: "",
         vendor: "OLVT",
       });
       fetchAdminData();
@@ -705,7 +705,7 @@ const AdminDashboard = ({ setAuthenticated }) => {
         padding: "40px",
         backgroundColor: "#e5edf5",
         // minHeight: "100vh",
-        paddingTop:'0px'
+        paddingTop: "0px",
       }}
     >
       <div
@@ -819,7 +819,7 @@ const AdminDashboard = ({ setAuthenticated }) => {
               variant="h5"
               gutterBottom
               sx={{
-                display:'flex',
+                display: "flex",
                 marginBottom: "20px",
                 fontWeight: "bold",
                 color: "#4a90e2",
@@ -1288,6 +1288,7 @@ const AdminDashboard = ({ setAuthenticated }) => {
                   <TableCell>Current Company</TableCell>
                   <TableCell>Current Location</TableCell>
                   <TableCell>Qualification</TableCell>
+                  <TableCell>Status</TableCell>
                   <TableCell>Actions</TableCell>
                 </TableRow>
               </TableHead>
@@ -1302,6 +1303,30 @@ const AdminDashboard = ({ setAuthenticated }) => {
                     <TableCell>{candidate.current_company}</TableCell>
                     <TableCell>{candidate.current_location}</TableCell>
                     <TableCell>{candidate.qualification}</TableCell>
+                    <TableCell>
+                      <div>Status: {candidate.status}</div>
+                      {candidate.rejection_comments && (
+                        <div>
+                          {candidate.rejection_comments.map(
+                            (comment, index) => (
+                              <>
+                                <h4>Rejection Comments</h4>
+                                <div key={index}>
+                                  <strong>Team: {comment.team.name}</strong>
+                                  <p>Comment: {comment.comment}</p>
+                                  <small>
+                                    Created At:{" "}
+                                    {new Date(
+                                      comment.created_at
+                                    ).toLocaleString()}
+                                  </small>
+                                </div>
+                              </>
+                            )
+                          )}
+                        </div>
+                      )}
+                    </TableCell>
                     <TableCell>
                       <IconButton
                         color="error"
