@@ -97,7 +97,7 @@ const CandidateList = ({ activeTeamId, setAuthenticated }) => {
     try {
       await axios.post(
         `https://candidate-management-backend-1.onrender.com/candidates/update_status/${selectedCandidate.id}/Interview Scheduled/`,
-        { scheduled_time: selectedTimeSlot.toString() },
+        { scheduled_time: selectedTimeSlot.toString() ,activeTeamId},
         {
           headers: { Authorization: `Bearer ${token}` },
           withCredentials: true,
