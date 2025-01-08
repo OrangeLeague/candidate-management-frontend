@@ -39,7 +39,7 @@ const CandidateList = ({ activeTeamId, setAuthenticated }) => {
   const [error, setError] = useState("");
   const [selectedTimeSlot, setSelectedTimeSlot] = useState("");
 
-  console.log(timeSlots, "timeSlotsdsdsd",selectedDateTime);
+  console.log(timeSlots, "timeSlotsdsdsd", selectedDateTime);
   useEffect(() => {
     const fetchTimeSlots = async () => {
       try {
@@ -66,10 +66,13 @@ const CandidateList = ({ activeTeamId, setAuthenticated }) => {
 
   const fetchCandidates = useCallback(async () => {
     try {
-      const response = await axios.get("https://candidate-management-backend-1.onrender.com/candidates/", {
-        params: { activeTeamId },
-        withCredentials: true,
-      });
+      const response = await axios.get(
+        "https://candidate-management-backend-1.onrender.com/candidates/",
+        {
+          params: { activeTeamId },
+          withCredentials: true,
+        }
+      );
       setCandidates(response.data);
       setLoading(false);
     } catch (error) {
@@ -80,6 +83,23 @@ const CandidateList = ({ activeTeamId, setAuthenticated }) => {
 
   useEffect(() => {
     fetchCandidates();
+  }, [fetchCandidates]);
+
+  // Add visibilitychange listener
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === "visible") {
+        // Tab has become visible, refresh data
+        fetchCandidates();
+      }
+    };
+
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+
+    // Cleanup event listener on component unmount
+    return () => {
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+    };
   }, [fetchCandidates]);
 
   const handleScheduleInterview = (candidate) => {
@@ -97,7 +117,7 @@ const CandidateList = ({ activeTeamId, setAuthenticated }) => {
     try {
       await axios.post(
         `https://candidate-management-backend-1.onrender.com/candidates/update_status/${selectedCandidate.id}/Interview Scheduled/`,
-        { scheduled_time: selectedTimeSlot.toString() ,activeTeamId},
+        { scheduled_time: selectedTimeSlot.toString(), activeTeamId },
         {
           headers: { Authorization: `Bearer ${token}` },
           withCredentials: true,
@@ -127,7 +147,7 @@ const CandidateList = ({ activeTeamId, setAuthenticated }) => {
     try {
       await axios.post(
         `https://candidate-management-backend-1.onrender.com/candidates/update_status/${selectedCandidate.id}/Rejected/`,
-        { comment: rejectionComment ,activeTeamId}, // Send the rejection comment to backend
+        { comment: rejectionComment, activeTeamId }, // Send the rejection comment to backend
         {
           headers: { Authorization: `Bearer ${token}` },
           withCredentials: true,
@@ -146,7 +166,7 @@ const CandidateList = ({ activeTeamId, setAuthenticated }) => {
     try {
       await axios.post(
         `https://candidate-management-backend-1.onrender.com/candidates/update_status/${id}/${status}/`,
-        {activeTeamId},
+        { activeTeamId },
         {
           headers: { Authorization: `Bearer ${token}` },
           withCredentials: true,
@@ -196,7 +216,7 @@ const CandidateList = ({ activeTeamId, setAuthenticated }) => {
     <Box
       sx={{
         // height: "100vh",
-        backgroundColor: "#e5edf5",
+        backgroundColor: "#F6F6F6",
         paddingLeft: "60px",
         paddingRight: "60px",
       }}
@@ -216,7 +236,7 @@ const CandidateList = ({ activeTeamId, setAuthenticated }) => {
             fontWeight: 700, // Bold text
             fontSize: "48px", // Font size
             textAlign: "center", // Center-align text
-            background: "linear-gradient(to right, #ffb622, #fe2a58)", // Gradient color
+            background: "linear-gradient(to right, #FFB622, #ed6c02)", // Gradient color
             WebkitBackgroundClip: "text", // Clip the gradient to the text
             color: "transparent", // Makes the text itself transparent to show the gradient
             padding: "20px 0", // Padding for spacing above and below
@@ -261,155 +281,6 @@ const CandidateList = ({ activeTeamId, setAuthenticated }) => {
         />
       </div>
 
-      {/* <TableContainer component={Paper} sx={{ boxShadow: 3 }}>
-        <Table>
-          <TableHead>
-            <TableRow>
-              <TableCell>
-                <strong>Name</strong>
-              </TableCell>
-              <TableCell>
-                <strong>Years of Experience</strong>
-              </TableCell>
-              <TableCell>
-                <strong>Skillset</strong>
-              </TableCell>
-              <TableCell>
-                <strong>Status</strong>
-              </TableCell>
-              <TableCell>
-                <strong>Actions</strong>
-              </TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {filteredCandidates?.map((candidate) => (
-              <TableRow key={candidate.id}>
-                <TableCell>{candidate.name}</TableCell>
-                <TableCell>{candidate.years_of_experience}</TableCell>
-                <TableCell>{candidate.skillset}</TableCell>
-                <TableCell>
-                  <Typography
-                    variant="body2"
-                    sx={{
-                      color:
-                        candidate.status === "Open"
-                          ? "green"
-                          : candidate.status === "Interview Scheduled"
-                          ? "orange"
-                          : candidate.status === "Selected"
-                          ? "blue"
-                          : "red",
-                    }}
-                  >
-                    {candidate.status}
-                  </Typography>
-                  {candidate.scheduled_time && (
-                    <Typography
-                      variant="caption"
-                      sx={{
-                        marginTop: "4px",
-                        color: "gray",
-                        fontStyle: "italic",
-                      }}
-                    >
-                      {new Date(candidate.scheduled_time).toLocaleString(
-                        "en-US",
-                        {
-                          dateStyle: "medium",
-                          timeStyle: "short",
-                        }
-                      )}
-                    </Typography>
-                  )}
-                </TableCell>
-                <TableCell>
-                  <Box
-                    sx={{
-                      display: "flex",
-                      flexDirection: "row",
-                      justifyContent: "space-between",
-                      alignItems: "center",
-                      gap: 2,
-                    }}
-                  >
-                    <Box sx={{ display: "flex", gap: 1, alignItems: "center" }}>
-                      <Link
-                        href={`http://localhost:8000/${candidate.cv}`}
-                        target="_blank"
-                        underline="hover"
-                        sx={{ color: "primary.main", fontWeight: "bold" }}
-                      >
-                        View CV
-                      </Link>
-                      <Button
-                        variant="outlined"
-                        size="small"
-                        color="primary"
-                        href={`http://localhost:8000/${candidate.cv}`}
-                        download
-                        sx={{
-                          textTransform: "none",
-                        }}
-                      >
-                        Download
-                      </Button>
-                    </Box>
-
-                    <Box sx={{ display: "flex", gap: 1 }}>
-                      {candidate.status === "Open" && (
-                        <Button
-                          variant="contained"
-                          color="primary"
-                          size="small"
-                          sx={{
-                            textTransform: "none",
-                            boxShadow: 2,
-                          }}
-                          onClick={() => handleScheduleInterview(candidate)}
-                        >
-                          Schedule Interview
-                        </Button>
-                      )}
-                      {candidate.status === "Interview Scheduled" && (
-                        <>
-                          <Button
-                            variant="contained"
-                            color="success"
-                            size="small"
-                            sx={{
-                              textTransform: "none",
-                              boxShadow: 2,
-                            }}
-                            onClick={() =>
-                              updateStatus(candidate.id, "Selected")
-                            }
-                          >
-                            Select
-                          </Button>
-                          <Button
-                            variant="contained"
-                            color="error"
-                            size="small"
-                            sx={{
-                              textTransform: "none",
-                              boxShadow: 2,
-                            }}
-                            onClick={() => handleReject(candidate)}
-                          >
-                            Reject
-                          </Button>
-                        </>
-                      )}
-                    </Box>
-                  </Box>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer> */}
-
       <TableContainer
         component={Paper}
         sx={{
@@ -425,77 +296,77 @@ const CandidateList = ({ activeTeamId, setAuthenticated }) => {
             <TableRow>
               <TableCell>
                 <Typography
-                  sx={{ color: "#7E97B8", fontSize: "16px", fontWeight: 700 }}
+                  sx={{ color: "#1D1D1D", fontSize: "16px", fontWeight: 700 }}
                 >
                   Name
                 </Typography>
               </TableCell>
               <TableCell>
                 <Typography
-                  sx={{ color: "#7E97B8", fontSize: "16px", fontWeight: 700 }}
-                >
-                  Y.O.E
-                </Typography>
-              </TableCell>
-              <TableCell>
-                <Typography
-                  sx={{ color: "#7E97B8", fontSize: "16px", fontWeight: 700 }}
-                >
-                  Skillset
-                </Typography>
-              </TableCell>
-              <TableCell>
-                <Typography
-                  sx={{ color: "#7E97B8", fontSize: "16px", fontWeight: 700 }}
-                >
-                  Status
-                </Typography>
-              </TableCell>
-              <TableCell>
-                <Typography
-                  sx={{ color: "#7E97B8", fontSize: "16px", fontWeight: 700 }}
-                >
-                  Resume
-                </Typography>
-              </TableCell>
-              <TableCell>
-                <Typography
-                  sx={{ color: "#7E97B8", fontSize: "16px", fontWeight: 700 }}
-                >
-                  Current Company
-                </Typography>
-              </TableCell>
-              <TableCell>
-                <Typography
-                  sx={{ color: "#7E97B8", fontSize: "16px", fontWeight: 700 }}
-                >
-                  Current Location
-                </Typography>
-              </TableCell>
-              <TableCell>
-                <Typography
-                  sx={{ color: "#7E97B8", fontSize: "16px", fontWeight: 700 }}
-                >
-                  Notice Period / LWD
-                </Typography>
-              </TableCell>
-              <TableCell>
-                <Typography
-                  sx={{ color: "#7E97B8", fontSize: "16px", fontWeight: 700 }}
-                >
-                  Qualification
-                </Typography>
-              </TableCell>
-              <TableCell>
-                <Typography
-                  sx={{ color: "#7E97B8", fontSize: "16px", fontWeight: 700 }}
+                  sx={{ color: "#1D1D1D", fontSize: "16px", fontWeight: 700 }}
                 >
                   Vendor
                 </Typography>
               </TableCell>
               <TableCell>
                 <Typography
-                  sx={{ color: "#7E97B8", fontSize: "16px", fontWeight: 700 }}
+                  sx={{ color: "#1D1D1D", fontSize: "16px", fontWeight: 700 }}
+                >
+                  Y.O.E
+                </Typography>
+              </TableCell>
+              <TableCell>
+                <Typography
+                  sx={{ color: "#1D1D1D", fontSize: "16px", fontWeight: 700 }}
+                >
+                  Skillset
+                </Typography>
+              </TableCell>
+              <TableCell>
+                <Typography
+                  sx={{ color: "#1D1D1D", fontSize: "16px", fontWeight: 700 }}
+                >
+                  Status
+                </Typography>
+              </TableCell>
+              <TableCell>
+                <Typography
+                  sx={{ color: "#1D1D1D", fontSize: "16px", fontWeight: 700 }}
+                >
+                  Resume
+                </Typography>
+              </TableCell>
+              <TableCell>
+                <Typography
+                  sx={{ color: "#1D1D1D", fontSize: "16px", fontWeight: 700 }}
+                >
+                  Notice Period / LWD
+                </Typography>
+              </TableCell>
+              <TableCell>
+                <Typography
+                  sx={{ color: "#1D1D1D", fontSize: "16px", fontWeight: 700 }}
+                >
+                  Current Company
+                </Typography>
+              </TableCell>
+              <TableCell>
+                <Typography
+                  sx={{ color: "#1D1D1D", fontSize: "16px", fontWeight: 700 }}
+                >
+                  Qualification
+                </Typography>
+              </TableCell>
+              <TableCell>
+                <Typography
+                  sx={{ color: "#1D1D1D", fontSize: "16px", fontWeight: 700 }}
+                >
+                  Current Location
+                </Typography>
+              </TableCell>
+              <TableCell>
+                <Typography
+                  sx={{ color: "#1D1D1D", fontSize: "16px", fontWeight: 700 }}
                 >
                   Action
                 </Typography>
@@ -506,17 +377,22 @@ const CandidateList = ({ activeTeamId, setAuthenticated }) => {
             {filteredCandidates?.map((candidate) => (
               <TableRow key={candidate.id}>
                 <TableCell
-                  sx={{ color: "#7E97B8", fontSize: "16px", fontWeight: 700 }}
+                  sx={{ color: "#455C7A", fontSize: "16px", fontWeight: 700 }}
                 >
                   {candidate.name}
                 </TableCell>
                 <TableCell
-                  sx={{ color: "#7E97B8", fontSize: "16px", fontWeight: 700 }}
+                  sx={{ color: "#6B6B6B", fontSize: "16px", fontWeight: 400 }}
+                >
+                  {candidate.vendor}
+                </TableCell>
+                <TableCell
+                  sx={{ color: "#6B6B6B", fontSize: "16px", fontWeight: 400 }}
                 >
                   {candidate.years_of_experience}
                 </TableCell>
                 <TableCell
-                  sx={{ color: "#7E97B8", fontSize: "16px", fontWeight: 700 }}
+                  sx={{ color: "#6B6B6B", fontSize: "16px", fontWeight: 400 }}
                 >
                   {candidate.skillset}
                 </TableCell>
@@ -526,12 +402,14 @@ const CandidateList = ({ activeTeamId, setAuthenticated }) => {
                     sx={{
                       color:
                         candidate.status === "Open"
-                          ? "green"
+                          ? "#35AB80"
                           : candidate.status === "Interview Scheduled"
-                          ? "orange"
+                          ? "#FF8734"
                           : candidate.status === "Selected"
-                          ? "blue"
-                          : "red",
+                          ? "#6B79EF"
+                          : "#FF5797",
+                      fontSize:'16px',
+                      fontWeight:400
                     }}
                   >
                     {candidate.status}
@@ -541,8 +419,10 @@ const CandidateList = ({ activeTeamId, setAuthenticated }) => {
                       variant="caption"
                       sx={{
                         marginTop: "4px",
-                        color: "#7E97B8",
+                        color: "#6B6B6B",
                         fontStyle: "italic",
+                        fontSize:'16px',
+                        fontWeight:400
                       }}
                     >
                       {new Date(candidate.scheduled_time).toLocaleString(
@@ -561,44 +441,51 @@ const CandidateList = ({ activeTeamId, setAuthenticated }) => {
                       // href={`https://candidate-management-backend-1.onrender.com${candidate.cv}`}
                       href={`${candidate.file_url}`}
                       target="_blank"
-                      sx={{ color: "#F15D27" }} // Hex code for orange
+                      sx={{ color: "#FF8734" }} // Hex code for orange
                     >
-                      <VisibilityIcon />
+                      {/* <VisibilityIcon /> */}
+                      <DownloadIcon />
                     </IconButton>
-                    <IconButton
+                    {/* <IconButton
                       // href={`https://candidate-management-backend-1.onrender.com${candidate.cv}`}
                       href={`${candidate.file_url}`}
                       download
                       sx={{ color: "#F15D27" }} // Hex code for orange
                     >
                       <DownloadIcon />
-                    </IconButton>
+                    </IconButton> */}
+
+                    {/* <a
+                      href={`${candidate.file_url}`}
+                      download
+                      style={{ textDecoration: "none" }}
+                    >
+                      <IconButton sx={{ color: "#FF8734" }}>
+                        {" "}
+                        <DownloadIcon />
+                      </IconButton>
+                    </a> */}
                   </Box>
                 </TableCell>
                 <TableCell
-                  sx={{ color: "#7E97B8", fontSize: "16px", fontWeight: 700 }}
+                  sx={{ color: "#6B6B6B", fontSize: "16px", fontWeight: 400 }}
+                >
+                  {candidate.notice_period > 0 && candidate.notice_period}days
+                </TableCell>
+                <TableCell
+                  sx={{ color: "#6B6B6B", fontSize: "16px", fontWeight: 400 }}
                 >
                   {candidate.current_company}
                 </TableCell>
                 <TableCell
-                  sx={{ color: "#7E97B8", fontSize: "16px", fontWeight: 700 }}
-                >
-                  {candidate.current_location}
-                </TableCell>
-                <TableCell
-                  sx={{ color: "#7E97B8", fontSize: "16px", fontWeight: 700 }}
-                >
-                  {candidate.notice_period>0 && candidate.notice_period}days
-                </TableCell>
-                <TableCell
-                  sx={{ color: "#7E97B8", fontSize: "16px", fontWeight: 700 }}
+                  sx={{ color: "#6B6B6B", fontSize: "16px", fontWeight: 400 }}
                 >
                   {candidate.qualification}
                 </TableCell>
                 <TableCell
-                  sx={{ color: "#7E97B8", fontSize: "16px", fontWeight: 700 }}
+                  sx={{ color: "#6B6B6B", fontSize: "16px", fontWeight: 400 }}
                 >
-                  {candidate.vendor}
+                  {candidate.current_location}
                 </TableCell>
                 <TableCell>
                   <Box sx={{ display: "flex", gap: 2 }}>
@@ -609,11 +496,14 @@ const CandidateList = ({ activeTeamId, setAuthenticated }) => {
                         size="small"
                         sx={{
                           textTransform: "none",
-                          borderRadius: "20px",
+                          borderRadius: "12px",
                           background: "white",
-                          color: "#F15D27",
-                          fontSize: "16px",
+                          color: "#FF8734",
                           fontWeight: 700,
+                          paddingTop:'10px',
+                          paddingBottom:'10px',
+                          paddingLeft:'12px',
+                          paddingRight:'12px'
                         }}
                         onClick={() => handleScheduleInterview(candidate)}
                       >
@@ -628,8 +518,16 @@ const CandidateList = ({ activeTeamId, setAuthenticated }) => {
                           size="small"
                           sx={{
                             textTransform: "none",
-                            borderRadius: "20px",
-                            fontWeight: "bold",
+                            borderRadius: "12px",
+                            fontSize:'12px',
+                            fontWeight:400,
+                            backgroundColor:'#FF8734',
+                            display:'flex',
+                            flexDirection:'column',
+                            paddingTop:'9px',
+                            paddingBottom:'9px',
+                            paddingLeft:'16px',
+                            paddingRight:'16px'
                           }}
                           onClick={() => updateStatus(candidate.id, "Selected")}
                         >
@@ -646,10 +544,17 @@ const CandidateList = ({ activeTeamId, setAuthenticated }) => {
                           size="small"
                           sx={{
                             textTransform: "none",
-                            borderRadius: "20px",
-                            fontWeight: "bold",
+                            borderRadius: "12px",
+                            fontSize:'12px',
+                            fontWeight:400,
                             background: "white",
                             color: "black",
+                            display:'flex',
+                            flexDirection:'column',
+                            paddingTop:'9px',
+                            paddingBottom:'9px',
+                            paddingLeft:'16px',
+                            paddingRight:'16px'
                           }}
                           onClick={() => handleReject(candidate)}
                         >
@@ -657,7 +562,7 @@ const CandidateList = ({ activeTeamId, setAuthenticated }) => {
                             src={rejectImg}
                             alt="select-img"
                             style={{ height: "24px", width: "24px" }}
-                          /> 
+                          />
                           Reject
                         </Button>
                       </>
@@ -670,8 +575,15 @@ const CandidateList = ({ activeTeamId, setAuthenticated }) => {
                           size="small"
                           sx={{
                             textTransform: "none",
-                            borderRadius: "20px",
-                            fontWeight: "bold",
+                            borderRadius: "12px",
+                            fontSize:'12px',
+                            fontWeight:400,
+                            display:'flex',
+                            flexDirection:'column',
+                            paddingTop:'9px',
+                            paddingBottom:'9px',
+                            paddingLeft:'16px',
+                            paddingRight:'16px'
                           }}
                           onClick={() => updateStatus(candidate.id, "Selected")}
                           disabled
@@ -689,10 +601,17 @@ const CandidateList = ({ activeTeamId, setAuthenticated }) => {
                           size="small"
                           sx={{
                             textTransform: "none",
-                            borderRadius: "20px",
-                            fontWeight: "bold",
+                            borderRadius: "12px",
+                            fontSize:'12px',
+                            fontWeight:400,
                             background: "white",
                             color: "black",
+                            display:'flex',
+                            flexDirection:'column',
+                            paddingTop:'9px',
+                            paddingBottom:'9px',
+                            paddingLeft:'16px',
+                            paddingRight:'16px'
                           }}
                           onClick={() => handleReject(candidate)}
                           disabled
@@ -880,7 +799,7 @@ const CandidateList = ({ activeTeamId, setAuthenticated }) => {
             paddingLeft: "25px",
             paddingRight: "20px",
             paddingBottom: "20px",
-            gap:'10px'
+            gap: "10px",
           }}
         >
           <Button
@@ -890,9 +809,9 @@ const CandidateList = ({ activeTeamId, setAuthenticated }) => {
               width: "100%",
               color: "#FBFCFE",
               backgroundColor: "#F15D27",
-              borderRadius:'12px',
-              fontSize:'16px',
-              fontWeight:700
+              borderRadius: "12px",
+              fontSize: "16px",
+              fontWeight: 700,
             }}
           >
             Cancel
@@ -903,11 +822,11 @@ const CandidateList = ({ activeTeamId, setAuthenticated }) => {
             style={{
               width: "100%",
               color: "#F15D27",
-              borderRadius:'12px',
+              borderRadius: "12px",
               boxShadow:
                 "4px 2px 8px 0 rgba(95, 157, 231, 0.48), -4px -2px 4px 0 rgba(255, 255, 255, 0.3)",
-              fontSize:'16px',
-              fontWeight:700
+              fontSize: "16px",
+              fontWeight: 700,
             }}
           >
             Submit

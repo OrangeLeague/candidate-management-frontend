@@ -76,7 +76,7 @@ const App = () => {
               <>
                 <Header />
                 {/* <Logout setAuthenticated={setAuthenticated} /> */}
-                <AdminDashboard setAuthenticated={setAuthenticated}/>
+                <AdminDashboard setAuthenticated={setAuthenticated} />
               </>
             ) : (
               <>
@@ -91,7 +91,15 @@ const App = () => {
             )
           }
         />
-        <Route path="/candidates/:id" element={<CandidateScreen />} />
+        <Route
+          path="/candidates/:id"
+          element={
+            <>
+              {/* <Header /> */}
+              <CandidateScreen />
+            </>
+          }
+        />
       </Routes>
 
       <Snackbar
@@ -99,8 +107,12 @@ const App = () => {
         autoHideDuration={3000} // Snackbar will auto-hide after 3 seconds
         onClose={() => setOpenSnackbar(false)}
         anchorOrigin={{ vertical: "top", horizontal: "right" }} // Top-right corner
+      >
+        <Alert
+          onClose={() => setOpenSnackbar(false)}
+          severity="success"
+          sx={{ width: "100%" }}
         >
-        <Alert onClose={() => setOpenSnackbar(false)} severity="success" sx={{ width: "100%" }}>
           Welcome to OLVT Talent Sphere!
         </Alert>
       </Snackbar>

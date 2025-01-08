@@ -549,13 +549,14 @@ import {
   Tab,
 } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
+import EditIcon from "@mui/icons-material/Edit";
 import Logout from "../Logout";
 
 const AdminDashboard = ({ setAuthenticated }) => {
   const [teams, setTeams] = useState([]);
   const [candidates, setCandidates] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState(0); // State for managing tabs
+  const [activeTab, setActiveTab] = useState(1); // State for managing tabs
   const [newTeam, setNewTeam] = useState({
     username: "",
     password: "",
@@ -573,6 +574,7 @@ const AdminDashboard = ({ setAuthenticated }) => {
     current_location: "",
     vendor: "OLVT",
   });
+  const [editingCandidate, setEditingCandidate] = useState(null);
 
   const fetchAdminData = async () => {
     try {
@@ -627,7 +629,7 @@ const AdminDashboard = ({ setAuthenticated }) => {
       formData.append("notice_period", newCandidate.notice_period);
       formData.append("current_company", newCandidate.current_company);
       formData.append("qualification", newCandidate.qualification);
-      formData.append("current_locatinon", newCandidate.current_location);
+      formData.append("current_location", newCandidate.current_location);
       formData.append("vendor", newCandidate.vendor);
       if (newCandidate.cv) {
         formData.append("cv", newCandidate.cv);
@@ -682,6 +684,84 @@ const AdminDashboard = ({ setAuthenticated }) => {
     } catch (error) {
       console.error("Error deleting candidate:", error);
     }
+  };
+
+  const handleEditCandidate = (candidate) => {
+    setEditingCandidate(candidate);
+    setNewCandidate({
+      id: candidate.id,
+      name: candidate.name,
+      years_of_experience: candidate.years_of_experience,
+      skillset: candidate.skillset,
+      status: candidate.status,
+      cv: null, // Set to null unless handling file updates
+      notice_period: candidate.notice_period,
+      current_company: candidate.current_company,
+      qualification: candidate.qualification,
+      current_location: candidate.current_location,
+      vendor: candidate.vendor,
+    });
+  };
+
+  const handleUpdateCandidate = async (candidate) => {
+    try {
+      // Create a FormData object to handle text fields and optional file upload
+      const formData = new FormData();
+      formData.append("name", candidate.name);
+      formData.append("years_of_experience", candidate.years_of_experience);
+      formData.append("skillset", candidate.skillset);
+      formData.append("status", candidate.status);
+      formData.append("notice_period", candidate.notice_period);
+      formData.append("current_company", candidate.current_company);
+      formData.append("qualification", candidate.qualification);
+      formData.append("current_location", candidate.current_location);
+      formData.append("vendor", candidate.vendor);
+
+      // Append CV file if provided
+      if (candidate.cv) {
+        formData.append("cv", candidate.cv);
+      }
+
+      // Make the API call to update the candidate
+      const response = await axios.put(
+        `https://candidate-management-backend-1.onrender.com/candidates/admin/candidates/${candidate.id}/update`, // Update endpoint with candidate ID
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data", // Required for file uploads
+          },
+        }
+      );
+
+      if (response.status === 200) {
+        alert("Candidate updated successfully!");
+        console.log("Updated Candidate:", response.data);
+      }
+    } catch (error) {
+      console.error("Error updating candidate:", error);
+      alert(
+        "An error occurred while updating the candidate. Please try again."
+      );
+    }
+  };
+
+  const handleSave = async () => {
+    await handleUpdateCandidate(newCandidate);
+    setEditingCandidate(null);
+    setNewCandidate({
+      id: "",
+      name: "",
+      years_of_experience: "",
+      skillset: "",
+      status: "",
+      cv: null,
+      notice_period: "",
+      current_company: "",
+      qualification: "",
+      current_location: "",
+      vendor: "",
+    });
+    fetchAdminData();
   };
 
   if (loading) {
@@ -1246,7 +1326,7 @@ const AdminDashboard = ({ setAuthenticated }) => {
                 }
                 style={{ marginTop: "10px", marginBottom: "10px" }}
               />
-              <Button
+              {/* <Button
                 variant="contained"
                 color="primary"
                 onClick={addCandidate}
@@ -1269,6 +1349,30 @@ const AdminDashboard = ({ setAuthenticated }) => {
                 }}
               >
                 Add Candidate
+              </Button> */}
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={editingCandidate ? handleSave : addCandidate}
+                sx={{
+                  padding: "10px 20px",
+                  backgroundColor: editingCandidate ? "#4CAF50" : "#F15D27",
+                  color: "#ffffff",
+                  fontSize: "16px",
+                  fontWeight: 700,
+                  borderRadius: "25px",
+                  boxShadow:
+                    "4px 4px 10px rgba(0, 0, 0, 0.2), -4px -4px 10px rgba(255, 255, 255, 0.5)",
+                  transition: "all 0.3s ease-in-out",
+                  "&:hover": {
+                    backgroundColor: editingCandidate ? "#45A049" : "#357ABD",
+                    transform: "scale(1.05)",
+                    boxShadow:
+                      "5px 5px 12px rgba(0, 0, 0, 0.25), -5px -5px 12px rgba(255, 255, 255, 0.6)",
+                  },
+                }}
+              >
+                {editingCandidate ? "Save Changes" : "Add Candidate"}
               </Button>
             </Box>
           </Box>
@@ -1333,6 +1437,12 @@ const AdminDashboard = ({ setAuthenticated }) => {
                         onClick={() => deleteCandidate(candidate.id)}
                       >
                         <DeleteIcon />
+                      </IconButton>
+                      <IconButton
+                        color="error"
+                        onClick={() => handleEditCandidate(candidate)}
+                      >
+                        <EditIcon />
                       </IconButton>
                     </TableCell>
                   </TableRow>
