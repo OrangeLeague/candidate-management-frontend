@@ -277,7 +277,7 @@ import img from '../assests/comp_logo.png';
 const CandidateScreen = () => {
   const { id } = useParams();
   const [selectedSlots, setSelectedSlots] = useState({});
-  const [currentWeek, setCurrentWeek] = useState(dayjs());
+  // const [currentWeek, setCurrentWeek] = useState(dayjs());
   const [selectedDate, setSelectedDate] = useState(dayjs());
   const [candidateName, setCandidateName] = useState("");
 
