@@ -10,7 +10,9 @@ import { Snackbar, Alert } from "@mui/material"; // Import Snackbar and Alert co
 
 const App = () => {
   const [authenticated, setAuthenticated] = useState(false);
+  const [isAdminAuthenticated, setIsAdminAuthenticated] = useState(false); // Admin authentication
   const [openSnackbar, setOpenSnackbar] = useState(false); // Snackbar state to show the welcome message
+  const [activeRole, setActiveRole] = useState("");
 
   console.log(authenticated, "authenticatedsdsds");
   const [activeTeamId, setActiveTeamId] = useState(() => {
@@ -32,12 +34,12 @@ const App = () => {
       localStorage.setItem("activeTeamId", JSON.stringify(activeTeamId));
     }
   }, [activeTeamId]);
-  useEffect(() => {
-    const token = localStorage.getItem("access_token");
-    if (token) {
-      setAuthenticated(true);
-    }
-  }, []);
+  // useEffect(() => {
+  //   const token = localStorage.getItem("access_token");
+  //   if (token) {
+  //     setAuthenticated(true);
+  //   }
+  // }, []);
 
   const handleLoginSuccess = () => {
     setOpenSnackbar(true); // Show the Snackbar when login is successful
@@ -64,6 +66,8 @@ const App = () => {
                   setAuthenticated={setAuthenticated}
                   setActiveTeamId={setActiveTeamId}
                   onLoginSuccess={handleLoginSuccess}
+                  setActiveRole={setActiveRole}
+                  activeRole={"candidate"}
                 />
               </>
             )
@@ -72,20 +76,24 @@ const App = () => {
         <Route
           path="/admin"
           element={
-            authenticated ? (
+            isAdminAuthenticated ? (
               <>
                 <Header />
                 {/* <Logout setAuthenticated={setAuthenticated} /> */}
-                <AdminDashboard setAuthenticated={setAuthenticated} />
+                <AdminDashboard setAuthenticated={setIsAdminAuthenticated} activeRole={activeRole}/>
               </>
             ) : (
               <>
                 <Header />
                 <LoginForm
-                  setAuthenticated={setAuthenticated}
-                  authenticated={authenticated}
+                  // setAuthenticated={setAuthenticated}
+                  // authenticated={authenticated}
+                  setAuthenticated={setIsAdminAuthenticated}
+                  authenticated={isAdminAuthenticated}
                   setActiveTeamId={setActiveTeamId}
                   onLoginSuccess={handleLoginSuccess}
+                  setActiveRole={setActiveRole}
+                  activeRole={"admin"}
                 />
               </>
             )

@@ -552,7 +552,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import Logout from "../Logout";
 
-const AdminDashboard = ({ setAuthenticated }) => {
+const AdminDashboard = ({ setAuthenticated ,activeRole}) => {
   const [teams, setTeams] = useState([]);
   const [candidates, setCandidates] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -561,6 +561,7 @@ const AdminDashboard = ({ setAuthenticated }) => {
     username: "",
     password: "",
     name: "",
+    role:activeRole,
   });
   const [newCandidate, setNewCandidate] = useState({
     name: "",
@@ -612,7 +613,7 @@ const AdminDashboard = ({ setAuthenticated }) => {
           },
         }
       );
-      setNewTeam({ username: "", password: "", name: "" });
+      setNewTeam({ username: "", password: "", name: "" ,role:activeRole});
       fetchAdminData();
     } catch (error) {
       console.error("Error adding team:", error);

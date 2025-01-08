@@ -7,7 +7,9 @@ import Snackbar from "@mui/material/Snackbar";
 import Alert from "@mui/material/Alert";
 import Box from "@mui/material/Box";
 
-const LoginForm = ({ setAuthenticated ,setActiveTeamId,authenticated,onLoginSuccess}) => {
+const LoginForm = ({ setAuthenticated ,setActiveTeamId,authenticated,onLoginSuccess,activeRole,setActiveRole}) => {
+  setActiveRole(activeRole)
+  console.log(activeRole,'activeRolesdsd');
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -21,6 +23,7 @@ const LoginForm = ({ setAuthenticated ,setActiveTeamId,authenticated,onLoginSucc
         {
           username,
           password,
+          activeRole
         },
         {
           withCredentials: true, // Ensure the cookie is sent with the request
