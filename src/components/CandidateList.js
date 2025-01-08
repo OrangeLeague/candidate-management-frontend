@@ -20,7 +20,6 @@ import {
   IconButton,
 } from "@mui/material";
 import Logout from "../Logout";
-import VisibilityIcon from "@mui/icons-material/Visibility";
 import DownloadIcon from "@mui/icons-material/Download";
 import selectImg from "../assests/select.png";
 import rejectImg from "../assests/reject.png";

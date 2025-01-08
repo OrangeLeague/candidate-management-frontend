@@ -259,7 +259,7 @@
 // };
 
 // export default CandidateScreen;
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import {
   Container,
   Typography,
@@ -268,7 +268,6 @@ import {
   Button,
   Box,
   TextField,
-  IconButton,
 } from "@mui/material";
 import dayjs from "dayjs";
 import { useParams } from "react-router-dom";
@@ -282,10 +281,25 @@ const CandidateScreen = () => {
   const [selectedDate, setSelectedDate] = useState(dayjs());
   const [candidateName, setCandidateName] = useState("");
 
-  const getCandidateName = async () => {
+  // const getCandidateName = async () => {
+  //   try {
+  //     const response = await axios.get(
+  //       `http://127.0.0.1:8000/candidates/get-candidate-name/${id}/`
+  //     );
+  //     if (response.status === 200) {
+  //       setCandidateName(response.data.candidate_name);
+  //     }
+  //   } catch (error) {
+  //     console.error(
+  //       "Error fetching candidate name:",
+  //       error.response?.data || error.message
+  //     );
+  //   }
+  // };
+  const getCandidateName = useCallback(async () => {
     try {
       const response = await axios.get(
-        `http://127.0.0.1:8000/candidates/get-candidate-name/${id}/`
+        `https://candidate-management-backend-1.onrender.com/candidates/get-candidate-name/${id}/`
       );
       if (response.status === 200) {
         setCandidateName(response.data.candidate_name);
@@ -296,13 +310,13 @@ const CandidateScreen = () => {
         error.response?.data || error.message
       );
     }
-  };
+  }, [id]);
 
   useEffect(() => {
     if (id) {
       getCandidateName();
     }
-  }, [id]);
+  }, [id,getCandidateName]);
 
   const timeSlots = [
     "1st half",
@@ -340,18 +354,6 @@ const CandidateScreen = () => {
         ? prev[dateKey].filter((s) => s !== slot)
         : [...(prev[dateKey] || []), slot],
     }));
-  };
-
-  const handleWeekChange = (direction) => {
-    const newWeek =
-      direction === "next"
-        ? currentWeek.add(7, "day")
-        : currentWeek.subtract(7, "day");
-    if (newWeek.isBefore(today.startOf("week")) || newWeek.isAfter(weekEnd)) {
-      alert("Cannot navigate beyond the allowed range.");
-      return;
-    }
-    setCurrentWeek(newWeek);
   };
 
   const handleSubmit = async () => {
