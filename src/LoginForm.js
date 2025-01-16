@@ -7,7 +7,7 @@ import Snackbar from "@mui/material/Snackbar";
 import Alert from "@mui/material/Alert";
 import Box from "@mui/material/Box";
 
-const LoginForm = ({ setAuthenticated ,setActiveTeamId,authenticated,onLoginSuccess,activeRole,setActiveRole}) => {
+const LoginForm = ({ setAuthenticated ,setActiveTeamId,authenticated,onLoginSuccess,activeRole,setActiveRole,setActiveTeamName}) => {
   setActiveRole(activeRole)
   console.log(activeRole,'activeRolesdsd');
   const [username, setUsername] = useState("");
@@ -30,7 +30,9 @@ const LoginForm = ({ setAuthenticated ,setActiveTeamId,authenticated,onLoginSucc
         }
       );
       localStorage.setItem("access_token", response.data.access); // Store JWT in localStorage
+      console.log(response?.data,'testinsdfsdfsdf');
       setActiveTeamId(response?.data?.team_id)
+      setActiveTeamName(response?.data?.team_name)
       setAuthenticated(true); // Update authentication state
       setSnackbarOpen(true); // Show success message
       onLoginSuccess();

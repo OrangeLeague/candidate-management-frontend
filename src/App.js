@@ -6,13 +6,15 @@ import CandidateList from "./components/CandidateList";
 import AdminDashboard from "./components/AdminDashboard";
 import CandidateScreen from "./components/CandidateScreen";
 import Header from "./common/Header";
-import { Snackbar, Alert } from "@mui/material"; // Import Snackbar and Alert components
+import { Snackbar, Alert, Typography } from "@mui/material"; // Import Snackbar and Alert components
 
 const App = () => {
   const [authenticated, setAuthenticated] = useState(false);
   const [isAdminAuthenticated, setIsAdminAuthenticated] = useState(false); // Admin authentication
   const [openSnackbar, setOpenSnackbar] = useState(false); // Snackbar state to show the welcome message
   const [activeRole, setActiveRole] = useState("");
+  const[activeTeamName,setActiveTeamName]=useState("");
+
 
   console.log(authenticated, "authenticatedsdsds");
   const [activeTeamId, setActiveTeamId] = useState(() => {
@@ -53,10 +55,40 @@ const App = () => {
             authenticated ? (
               <>
                 {/* <Logout setAuthenticated={setAuthenticated} /> */}
-                <Header />
+                <div
+                  style={{
+                    backgroundColor: "#F6F6F6",
+                    display: "flex",
+                    justifyContent: "space-between",
+                    paddingRight: "60px",
+                    paddingTop:'30px',
+                    alignItems:'center'
+                  }}
+                >
+                  <Header />
+                  <Typography
+                    style={{
+                      padding: "20px",
+                      display: "flex",
+                      alignItems: "center",
+                      background: "white",
+                      color: "#F15D27",
+                      fontWeight: 700,
+                      fontSize: "16px",
+                      cursor: "pointer",
+                      padding: "12px 16px",
+                      justifyContent:'center',
+                      height:'max-content',
+                      borderRadius: "12px",
+                    }}
+                  >
+                    Welcome <span style={{color:"#0b0909c2",marginLeft:'4px'}}>{activeTeamName}</span>
+                  </Typography>
+                </div>
                 <CandidateList
                   activeTeamId={activeTeamId}
                   setAuthenticated={setAuthenticated}
+                  activeTeamName={activeTeamName}
                 />
               </>
             ) : (
@@ -68,6 +100,7 @@ const App = () => {
                   onLoginSuccess={handleLoginSuccess}
                   setActiveRole={setActiveRole}
                   activeRole={"candidate"}
+                  setActiveTeamName={setActiveTeamName}
                 />
               </>
             )
@@ -80,7 +113,10 @@ const App = () => {
               <>
                 <Header />
                 {/* <Logout setAuthenticated={setAuthenticated} /> */}
-                <AdminDashboard setAuthenticated={setIsAdminAuthenticated} activeRole={activeRole}/>
+                <AdminDashboard
+                  setAuthenticated={setIsAdminAuthenticated}
+                  activeRole={activeRole}
+                />
               </>
             ) : (
               <>
@@ -94,6 +130,7 @@ const App = () => {
                   onLoginSuccess={handleLoginSuccess}
                   setActiveRole={setActiveRole}
                   activeRole={"admin"}
+                  setActiveTeamName={setActiveTeamName}
                 />
               </>
             )

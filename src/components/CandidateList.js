@@ -24,7 +24,8 @@ import DownloadIcon from "@mui/icons-material/Download";
 import selectImg from "../assests/select.png";
 import rejectImg from "../assests/reject.png";
 
-const CandidateList = ({ activeTeamId, setAuthenticated }) => {
+const CandidateList = ({ activeTeamId, setAuthenticated ,activeTeamName}) => {
+  console.log(activeTeamName,'activeTeamNamesasasdasd');
   const [candidates, setCandidates] = useState([]);
   const [loading, setLoading] = useState(true);
   const [openModal, setOpenModal] = useState(false);
