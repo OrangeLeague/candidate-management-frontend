@@ -670,7 +670,8 @@ const CandidateList = ({ activeTeamId, setAuthenticated ,activeTeamName}) => {
           {loading ? (
             <CircularProgress />
           ) : error ? (
-            <p>{error}</p>
+            // <p>{error}</p>
+            <p>No available time slots for the candidate {selectedCandidate?.name}.</p>
           ) : Object.keys(timeSlots).length === 0 ? (
             <p>No available time slots.</p>
           ) : (
