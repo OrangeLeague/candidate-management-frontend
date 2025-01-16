@@ -68,7 +68,6 @@ const App = () => {
                   <Header />
                   <Typography
                     style={{
-                      padding: "20px",
                       display: "flex",
                       alignItems: "center",
                       background: "white",
