@@ -13,8 +13,17 @@ const App = () => {
   const [isAdminAuthenticated, setIsAdminAuthenticated] = useState(false); // Admin authentication
   const [openSnackbar, setOpenSnackbar] = useState(false); // Snackbar state to show the welcome message
   const [activeRole, setActiveRole] = useState("");
-  const[activeTeamName,setActiveTeamName]=useState("");
-
+  // const[activeTeamName,setActiveTeamName]=useState("");
+  const [activeTeamName, setActiveTeamName] = useState(() => {
+    const savedTeamName = localStorage.getItem("activeTeamName");
+    return savedTeamName ? JSON.parse(savedTeamName) : "";
+  });
+  
+  useEffect(() => {
+    if (activeTeamName) {
+      localStorage.setItem("activeTeamName", JSON.stringify(activeTeamName));
+    }
+  }, [activeTeamName]);
 
   console.log(authenticated, "authenticatedsdsds");
   const [activeTeamId, setActiveTeamId] = useState(() => {

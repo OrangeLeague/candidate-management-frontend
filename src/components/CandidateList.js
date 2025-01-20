@@ -212,6 +212,18 @@ const CandidateList = ({ activeTeamId, setAuthenticated ,activeTeamName}) => {
       candidate.status.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
+  
+    // Format components individually
+    const day = new Intl.DateTimeFormat("en-US", { day: "2-digit" }).format(date);
+    const month = new Intl.DateTimeFormat("en-US", { month: "short" }).format(date);
+    const year = new Intl.DateTimeFormat("en-US", { year: "numeric" }).format(date);
+    const weekday = new Intl.DateTimeFormat("en-US", { weekday: "short" }).format(date);
+  
+    // Construct the desired format
+    return `${day} ${month} ${year}, ${weekday}`;
+  };
   return (
     <Box
       sx={{
@@ -677,7 +689,7 @@ const CandidateList = ({ activeTeamId, setAuthenticated ,activeTeamName}) => {
           ) : (
             Object.entries(timeSlots).map(([date, slots]) => (
               <div key={date} style={{ marginTop: "1rem" }}>
-                <h4 style={{ marginBottom: "0.5rem" }}>{date}</h4>
+                <h4 style={{ marginBottom: "0.5rem" }}>{formatDate(date)}</h4>
                 <div
                   style={{
                     display: "grid",
