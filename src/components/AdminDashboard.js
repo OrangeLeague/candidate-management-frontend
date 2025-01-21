@@ -567,6 +567,7 @@ const AdminDashboard = ({ setAuthenticated ,activeRole}) => {
     name: "",
     years_of_experience: "",
     skillset: "",
+    email:"",
     status: "Open",
     cv: null,
     notice_period: "",
@@ -651,6 +652,7 @@ const AdminDashboard = ({ setAuthenticated ,activeRole}) => {
         name: "",
         years_of_experience: "",
         skillset: "",
+        email:"",
         status: "Open",
         cv: null,
         notice_period: "",
@@ -694,6 +696,7 @@ const AdminDashboard = ({ setAuthenticated ,activeRole}) => {
       name: candidate.name,
       years_of_experience: candidate.years_of_experience,
       skillset: candidate.skillset,
+      email:candidate.email,
       status: candidate.status,
       cv: null, // Set to null unless handling file updates
       notice_period: candidate.notice_period,
@@ -754,6 +757,7 @@ const AdminDashboard = ({ setAuthenticated ,activeRole}) => {
       name: "",
       years_of_experience: "",
       skillset: "",
+      email:"",
       status: "",
       cv: null,
       notice_period: "",
@@ -1168,6 +1172,33 @@ const AdminDashboard = ({ setAuthenticated ,activeRole}) => {
                 }}
               />
               <TextField
+                label="Email"
+                value={newCandidate.email}
+                onChange={(e) =>
+                  setNewCandidate({ ...newCandidate, email: e.target.value })
+                }
+                variant="outlined"
+                sx={{
+                  flex: "1 1 300px",
+                  backgroundColor: "#ffffff",
+                  borderRadius: "5px",
+                  boxShadow:
+                    "inset 2px 2px 5px rgba(0, 0, 0, 0.1), inset -2px -2px 5px rgba(255, 255, 255, 0.8)",
+                  "& .MuiOutlinedInput-root": {
+                    "& fieldset": {
+                      borderColor: "#d6d6d6",
+                    },
+                    "&:hover fieldset": {
+                      borderColor: "#4a90e2",
+                    },
+                    "&.Mui-focused fieldset": {
+                      borderColor: "#4a90e2",
+                      borderWidth: "2px",
+                    },
+                  },
+                }}
+              />
+              <TextField
                 label="Notice Period/LWD"
                 value={newCandidate.notice_period}
                 onChange={(e) =>
@@ -1389,6 +1420,7 @@ const AdminDashboard = ({ setAuthenticated ,activeRole}) => {
                   <TableCell>Name</TableCell>
                   <TableCell>Experience</TableCell>
                   <TableCell>Skillset</TableCell>
+                  <TableCell>Email</TableCell>
                   <TableCell>Vendor</TableCell>
                   <TableCell>Current Company</TableCell>
                   <TableCell>Current Location</TableCell>
@@ -1404,6 +1436,7 @@ const AdminDashboard = ({ setAuthenticated ,activeRole}) => {
                     <TableCell>{candidate.name}</TableCell>
                     <TableCell>{candidate.years_of_experience}</TableCell>
                     <TableCell>{candidate.skillset}</TableCell>
+                    <TableCell>{candidate.email}</TableCell>
                     <TableCell>{candidate.vendor}</TableCell>
                     <TableCell>{candidate.current_company}</TableCell>
                     <TableCell>{candidate.current_location}</TableCell>

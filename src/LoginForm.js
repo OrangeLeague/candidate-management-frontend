@@ -6,6 +6,7 @@ import Button from "@mui/material/Button";
 import Snackbar from "@mui/material/Snackbar";
 import Alert from "@mui/material/Alert";
 import Box from "@mui/material/Box";
+import CircularProgress from "@mui/material/CircularProgress";
 
 const LoginForm = ({ setAuthenticated ,setActiveTeamId,authenticated,onLoginSuccess,activeRole,setActiveRole,setActiveTeamName}) => {
   setActiveRole(activeRole)
@@ -14,9 +15,11 @@ const LoginForm = ({ setAuthenticated ,setActiveTeamId,authenticated,onLoginSucc
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [loading, setLoading] = useState(false); // Track loading state
 
   const handleLogin = async (e) => {
     e.preventDefault();
+    setLoading(true); // Start loading
     try {
       const response = await axios.post(
         "https://candidate-management-backend-1.onrender.com/candidates/login/",//  http://localhost:8000/candidates/login/
@@ -39,6 +42,8 @@ const LoginForm = ({ setAuthenticated ,setActiveTeamId,authenticated,onLoginSucc
     } catch (error) {
       console.error("Login failed", error);
       setError("Invalid username or password.");
+    }finally{
+      setLoading(false); // Stop loading
     }
   };
 
@@ -89,7 +94,7 @@ const LoginForm = ({ setAuthenticated ,setActiveTeamId,authenticated,onLoginSucc
         fullWidth
         sx={{ padding: "10px" }}
       >
-        Login
+        {loading ? <CircularProgress size={24} sx={{ color: "#fff" }} /> : "Login"}
       </Button>
 
       <Snackbar

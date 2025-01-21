@@ -34,6 +34,7 @@ const CandidateList = ({ activeTeamId, setAuthenticated ,activeTeamName}) => {
   const [selectedDateTime, setSelectedDateTime] = useState(new Date());
   const [rejectionComment, setRejectionComment] = useState(""); // To store the rejection comment
   const [searchQuery, setSearchQuery] = useState("");
+  const[timeSlotsLoading,setTimeSlotsLoading]=useState(false);
 
   const [timeSlots, setTimeSlots] = useState({});
   const [error, setError] = useState("");
@@ -188,6 +189,22 @@ const CandidateList = ({ activeTeamId, setAuthenticated ,activeTeamName}) => {
       return;
     }
     handleConfirmSchedule(); // Pass the selected time slot to the parent handler
+  };
+
+  const requestTimeSlots = async (candidate) => {
+    setTimeSlotsLoading(true)
+    try {
+      const response = await axios.post('https://candidate-management-backend-1.onrender.com/candidates/request-time-slots/', {
+        email: candidate.email,
+        id: candidate.id,
+      });
+      alert(response.data.message);
+    } catch (error) {
+      alert("Failed to send email. Please try again.");
+      console.error(error);
+    }finally{
+      setTimeSlotsLoading(false)
+    }
   };
 
   if (loading) {
@@ -502,6 +519,27 @@ const CandidateList = ({ activeTeamId, setAuthenticated ,activeTeamName}) => {
                 <TableCell>
                   <Box sx={{ display: "flex", gap: 2 }}>
                     {candidate.status === "Open" && (
+                      Object.keys(timeSlots).length === 0 ?
+                      <Button
+                        variant="contained"
+                        color="warning"
+                        size="small"
+                        sx={{
+                          textTransform: "none",
+                          borderRadius: "12px",
+                          background: "white",
+                          color: "#FF8734",
+                          fontWeight: 700,
+                          paddingTop:'10px',
+                          paddingBottom:'10px',
+                          paddingLeft:'12px',
+                          paddingRight:'12px'
+                        }}
+                        onClick={() => requestTimeSlots(candidate)}
+                      >
+                        {timeSlotsLoading ? <CircularProgress size={24} sx={{ color: "orange" }} /> : "Request For Time Slots"}
+                      </Button>
+                      :
                       <Button
                         variant="contained"
                         color="warning"
