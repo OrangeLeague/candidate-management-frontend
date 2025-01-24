@@ -188,7 +188,7 @@ const CandidateList = ({ activeTeamId, setAuthenticated, activeTeamName }) => {
     }
   };
 
-  const updateStatus = async (id, status) => {
+  const updateStatus = async (id, status,candidateName) => {
     const token = localStorage.getItem("access_token");
     try {
       const response = await axios.post(
@@ -201,7 +201,7 @@ const CandidateList = ({ activeTeamId, setAuthenticated, activeTeamName }) => {
       );
       if (response.status === 200) {
         // Send email notification to HR
-        sendMailToHR(id, status);
+        sendMailToHR(id, status,candidateName);
 
         // Update the UI or state (if required)
         console.log(`Status updated to ${status} for candidate ${id}`);
@@ -215,13 +215,15 @@ const CandidateList = ({ activeTeamId, setAuthenticated, activeTeamName }) => {
   };
 
   // Function to send mail to HR
-  const sendMailToHR = async (candidateId, newStatus) => {
+  const sendMailToHR = async (candidateId, newStatus,candidateName) => {
     try {
       const response = await axios.post(
         "https://candidate-management-backend-1.onrender.com/candidates/send-mail/",
         {
           candidateId,
           status: newStatus,
+          activeTeamName,
+          candidateName
         }
       );
 
@@ -627,7 +629,7 @@ const CandidateList = ({ activeTeamId, setAuthenticated, activeTeamName }) => {
                             paddingLeft: "16px",
                             paddingRight: "16px",
                           }}
-                          onClick={() => updateStatus(candidate.id, "Selected")}
+                          onClick={() => updateStatus(candidate.id, "Selected",candidate.name)}
                         >
                           <img
                             src={selectImg}
