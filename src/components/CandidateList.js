@@ -38,7 +38,7 @@ const CandidateList = ({ activeTeamId, setAuthenticated, activeTeamName }) => {
 
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
-  const [pageSize, setPageSize] = useState(10); // Default page size
+  // const [pageSize, setPageSize] = useState(10); // Default page size
 
   const [timeSlots, setTimeSlots] = useState({});
   const [error, setError] = useState("");

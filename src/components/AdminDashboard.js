@@ -582,6 +582,7 @@ const AdminDashboard = ({ setAuthenticated, activeRole }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [pageSize, setPageSize] = useState(10); // Default items per page
+  console.log(pageSize,'pageSize');
 
   const fetchAdminData = async (page = 1, size = 10) => {
     try {
