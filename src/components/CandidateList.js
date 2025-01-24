@@ -131,7 +131,7 @@ const CandidateList = ({ activeTeamId, setAuthenticated, activeTeamName }) => {
 
     const token = localStorage.getItem("access_token");
     try {
-      await axios.post(
+      const response=await axios.post(
         `https://candidate-management-backend-1.onrender.com/candidates/update_status/${selectedCandidate.id}/Interview Scheduled/`,
         { scheduled_time: selectedTimeSlot.toString(), activeTeamId },
         {
@@ -143,6 +143,17 @@ const CandidateList = ({ activeTeamId, setAuthenticated, activeTeamName }) => {
       setSelectedCandidate(null);
       setSelectedDateTime(new Date());
       fetchCandidates();
+      if (response.status === 200) {
+        // Send email notification to HR
+        sendMailToHR(selectedCandidate.id, "Interview Scheduled",selectedCandidate.name);
+
+        // Update the UI or state (if required)
+        console.log(
+          `Status updated to Rejected for candidate ${selectedCandidate.id}`
+        );
+      } else {
+        console.error("Failed to update status");
+      }
     } catch (error) {
       console.error("Error scheduling interview:", error);
     }
@@ -162,7 +173,7 @@ const CandidateList = ({ activeTeamId, setAuthenticated, activeTeamName }) => {
     const token = localStorage.getItem("access_token");
     try {
       const response = await axios.post(
-        `https://candidate-management-backend-1.onrender.com/candidates/update_status/${selectedCandidate.id}/Rejected/`,
+        `http://127.0.0.1:8000/candidates/update_status/${selectedCandidate.id}/Rejected/`,
         { comment: rejectionComment, activeTeamId }, // Send the rejection comment to backend
         {
           headers: { Authorization: `Bearer ${token}` },
@@ -173,7 +184,7 @@ const CandidateList = ({ activeTeamId, setAuthenticated, activeTeamName }) => {
       setRejectionComment(""); // Clear the comment input
       if (response.status === 200) {
         // Send email notification to HR
-        sendMailToHR(selectedCandidate.id, "Rejected");
+        sendMailToHR(selectedCandidate.id, "Rejected",selectedCandidate.name);
 
         // Update the UI or state (if required)
         console.log(
