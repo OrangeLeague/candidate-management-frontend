@@ -547,12 +547,13 @@ import {
   IconButton,
   Tabs,
   Tab,
+  Pagination,
 } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import Logout from "../Logout";
 
-const AdminDashboard = ({ setAuthenticated ,activeRole}) => {
+const AdminDashboard = ({ setAuthenticated, activeRole }) => {
   const [teams, setTeams] = useState([]);
   const [candidates, setCandidates] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -561,13 +562,13 @@ const AdminDashboard = ({ setAuthenticated ,activeRole}) => {
     username: "",
     password: "",
     name: "",
-    role:activeRole,
+    role: activeRole,
   });
   const [newCandidate, setNewCandidate] = useState({
     name: "",
     years_of_experience: "",
     skillset: "",
-    email:"",
+    email: "",
     status: "Open",
     cv: null,
     notice_period: "",
@@ -578,16 +579,30 @@ const AdminDashboard = ({ setAuthenticated ,activeRole}) => {
   });
   const [editingCandidate, setEditingCandidate] = useState(null);
 
-  const fetchAdminData = async () => {
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [pageSize, setPageSize] = useState(10); // Default items per page
+
+  const fetchAdminData = async (page = 1, size = 10) => {
     try {
       const teamResponse = await axios.get(
         "https://candidate-management-backend-1.onrender.com/candidates/admin/teams/get-teams"
       );
       const candidateResponse = await axios.get(
-        "https://candidate-management-backend-1.onrender.com/candidates/admin/candidates/get-candidates"
+        "https://candidate-management-backend-1.onrender.com/candidates/admin/candidates/get-candidates",
+        {
+          params: {
+            page: page,
+            pageSize: size,
+          },
+        }
       );
+      const { candidates, total_pages } = candidateResponse.data;
       setTeams(teamResponse?.data);
-      setCandidates(candidateResponse?.data);
+      setCandidates(candidates);
+      setTotalPages(total_pages);
+      setCurrentPage(page);
+      setPageSize(size);
       setLoading(false);
     } catch (error) {
       console.error("Error fetching admin data:", error);
@@ -614,7 +629,7 @@ const AdminDashboard = ({ setAuthenticated ,activeRole}) => {
           },
         }
       );
-      setNewTeam({ username: "", password: "", name: "" ,role:activeRole});
+      setNewTeam({ username: "", password: "", name: "", role: activeRole });
       fetchAdminData();
     } catch (error) {
       console.error("Error adding team:", error);
@@ -627,6 +642,7 @@ const AdminDashboard = ({ setAuthenticated ,activeRole}) => {
       formData.append("name", newCandidate.name);
       formData.append("years_of_experience", newCandidate.years_of_experience);
       formData.append("skillset", newCandidate.skillset);
+      formData.append("email", newCandidate.email);
       formData.append("status", newCandidate.status || "Open");
       formData.append("notice_period", newCandidate.notice_period);
       formData.append("current_company", newCandidate.current_company);
@@ -652,7 +668,7 @@ const AdminDashboard = ({ setAuthenticated ,activeRole}) => {
         name: "",
         years_of_experience: "",
         skillset: "",
-        email:"",
+        email: "",
         status: "Open",
         cv: null,
         notice_period: "",
@@ -696,7 +712,7 @@ const AdminDashboard = ({ setAuthenticated ,activeRole}) => {
       name: candidate.name,
       years_of_experience: candidate.years_of_experience,
       skillset: candidate.skillset,
-      email:candidate.email,
+      email: candidate.email,
       status: candidate.status,
       cv: null, // Set to null unless handling file updates
       notice_period: candidate.notice_period,
@@ -757,7 +773,7 @@ const AdminDashboard = ({ setAuthenticated ,activeRole}) => {
       name: "",
       years_of_experience: "",
       skillset: "",
-      email:"",
+      email: "",
       status: "",
       cv: null,
       notice_period: "",
@@ -783,6 +799,11 @@ const AdminDashboard = ({ setAuthenticated ,activeRole}) => {
       </Box>
     );
   }
+
+  const handlePageChange = (event, newPage) => {
+    setCurrentPage(newPage);
+    fetchAdminData(newPage);
+  };
 
   return (
     <Box
@@ -1484,6 +1505,13 @@ const AdminDashboard = ({ setAuthenticated ,activeRole}) => {
               </TableBody>
             </Table>
           </TableContainer>
+          <Pagination
+            count={totalPages}
+            page={currentPage}
+            onChange={handlePageChange}
+            color="primary"
+            // className={styles.custom_pagination}
+          />
         </Box>
       )}
     </Box>

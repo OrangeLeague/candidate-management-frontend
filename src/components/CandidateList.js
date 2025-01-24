@@ -18,14 +18,14 @@ import {
   DialogTitle,
   TextField,
   IconButton,
+  Pagination,
 } from "@mui/material";
 import Logout from "../Logout";
 import DownloadIcon from "@mui/icons-material/Download";
 import selectImg from "../assests/select.png";
 import rejectImg from "../assests/reject.png";
 
-const CandidateList = ({ activeTeamId, setAuthenticated ,activeTeamName}) => {
-  console.log(activeTeamName,'activeTeamNamesasasdasd');
+const CandidateList = ({ activeTeamId, setAuthenticated, activeTeamName }) => {
   const [candidates, setCandidates] = useState([]);
   const [loading, setLoading] = useState(true);
   const [openModal, setOpenModal] = useState(false);
@@ -34,13 +34,23 @@ const CandidateList = ({ activeTeamId, setAuthenticated ,activeTeamName}) => {
   const [selectedDateTime, setSelectedDateTime] = useState(new Date());
   const [rejectionComment, setRejectionComment] = useState(""); // To store the rejection comment
   const [searchQuery, setSearchQuery] = useState("");
-  const[timeSlotsLoading,setTimeSlotsLoading]=useState(false);
+  const [timeSlotsLoading, setTimeSlotsLoading] = useState(false);
+
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(0);
+  const [pageSize, setPageSize] = useState(10); // Default page size
 
   const [timeSlots, setTimeSlots] = useState({});
   const [error, setError] = useState("");
   const [selectedTimeSlot, setSelectedTimeSlot] = useState("");
 
   console.log(timeSlots, "timeSlotsdsdsd", selectedDateTime);
+
+  const handlePageChange = (event, newPage) => {
+    setCurrentPage(newPage);
+    fetchCandidates(newPage);
+  };
+
   useEffect(() => {
     const fetchTimeSlots = async () => {
       try {
@@ -65,22 +75,27 @@ const CandidateList = ({ activeTeamId, setAuthenticated ,activeTeamName}) => {
     }
   }, [selectedCandidate?.id]);
 
-  const fetchCandidates = useCallback(async () => {
-    try {
-      const response = await axios.get(
-        "https://candidate-management-backend-1.onrender.com/candidates/",
-        {
-          params: { activeTeamId },
-          withCredentials: true,
-        }
-      );
-      setCandidates(response.data);
-      setLoading(false);
-    } catch (error) {
-      console.error("Error fetching candidates:", error);
-      setLoading(false);
-    }
-  }, [activeTeamId]); // Dependency array
+  const fetchCandidates = useCallback(
+    async (page = 1, pageSize = 10) => {
+      try {
+        const response = await axios.get(
+          "https://candidate-management-backend-1.onrender.com/candidates/",
+          {
+            params: { activeTeamId, page, page_size: pageSize },
+            withCredentials: true,
+          }
+        );
+        setCandidates(response.data);
+        setTotalPages(response.data.total_pages);
+        setCurrentPage(response.data.current_page);
+        setLoading(false);
+      } catch (error) {
+        console.error("Error fetching candidates:", error);
+        setLoading(false);
+      }
+    },
+    [activeTeamId]
+  ); // Dependency array
 
   useEffect(() => {
     fetchCandidates();
@@ -146,7 +161,7 @@ const CandidateList = ({ activeTeamId, setAuthenticated ,activeTeamName}) => {
   const handleRejectionSubmit = async () => {
     const token = localStorage.getItem("access_token");
     try {
-      await axios.post(
+      const response = await axios.post(
         `https://candidate-management-backend-1.onrender.com/candidates/update_status/${selectedCandidate.id}/Rejected/`,
         { comment: rejectionComment, activeTeamId }, // Send the rejection comment to backend
         {
@@ -156,6 +171,17 @@ const CandidateList = ({ activeTeamId, setAuthenticated ,activeTeamName}) => {
       );
       setOpenRejectionDialog(false); // Close the rejection comment dialog
       setRejectionComment(""); // Clear the comment input
+      if (response.status === 200) {
+        // Send email notification to HR
+        sendMailToHR(selectedCandidate.id, "Rejected");
+
+        // Update the UI or state (if required)
+        console.log(
+          `Status updated to Rejected for candidate ${selectedCandidate.id}`
+        );
+      } else {
+        console.error("Failed to update status");
+      }
       fetchCandidates(); // Fetch the updated candidates list
     } catch (error) {
       console.error("Error rejecting candidate:", error);
@@ -165,7 +191,7 @@ const CandidateList = ({ activeTeamId, setAuthenticated ,activeTeamName}) => {
   const updateStatus = async (id, status) => {
     const token = localStorage.getItem("access_token");
     try {
-      await axios.post(
+      const response = await axios.post(
         `https://candidate-management-backend-1.onrender.com/candidates/update_status/${id}/${status}/`,
         { activeTeamId },
         {
@@ -173,9 +199,41 @@ const CandidateList = ({ activeTeamId, setAuthenticated ,activeTeamName}) => {
           withCredentials: true,
         }
       );
+      if (response.status === 200) {
+        // Send email notification to HR
+        sendMailToHR(id, status);
+
+        // Update the UI or state (if required)
+        console.log(`Status updated to ${status} for candidate ${id}`);
+      } else {
+        console.error("Failed to update status");
+      }
       fetchCandidates();
     } catch (error) {
       console.error("Error updating status:", error);
+    }
+  };
+
+  // Function to send mail to HR
+  const sendMailToHR = async (candidateId, newStatus) => {
+    try {
+      const response = await axios.post(
+        "https://candidate-management-backend-1.onrender.com/candidates/send-mail/",
+        {
+          candidateId,
+          status: newStatus,
+        }
+      );
+
+      if (response.status === 200) {
+        console.log(
+          `Mail sent to HR for candidate ${candidateId} with status ${newStatus}`
+        );
+      } else {
+        console.error("Failed to send mail");
+      }
+    } catch (error) {
+      console.error("Error sending mail:", error);
     }
   };
 
@@ -192,18 +250,21 @@ const CandidateList = ({ activeTeamId, setAuthenticated ,activeTeamName}) => {
   };
 
   const requestTimeSlots = async (candidate) => {
-    setTimeSlotsLoading(true)
+    setTimeSlotsLoading(true);
     try {
-      const response = await axios.post('https://candidate-management-backend-1.onrender.com/candidates/request-time-slots/', {
-        email: candidate.email,
-        id: candidate.id,
-      });
+      const response = await axios.post(
+        "https://candidate-management-backend-1.onrender.com/candidates/request-time-slots/",
+        {
+          email: candidate.email,
+          id: candidate.id,
+        }
+      );
       alert(response.data.message);
     } catch (error) {
       alert("Failed to send email. Please try again.");
       console.error(error);
-    }finally{
-      setTimeSlotsLoading(false)
+    } finally {
+      setTimeSlotsLoading(false);
     }
   };
 
@@ -233,11 +294,19 @@ const CandidateList = ({ activeTeamId, setAuthenticated ,activeTeamName}) => {
     const date = new Date(dateString);
   
     // Format components individually
-    const day = new Intl.DateTimeFormat("en-US", { day: "2-digit" }).format(date);
-    const month = new Intl.DateTimeFormat("en-US", { month: "short" }).format(date);
-    const year = new Intl.DateTimeFormat("en-US", { year: "numeric" }).format(date);
-    const weekday = new Intl.DateTimeFormat("en-US", { weekday: "short" }).format(date);
-  
+    const day = new Intl.DateTimeFormat("en-US", { day: "2-digit" }).format(
+      date
+    );
+    const month = new Intl.DateTimeFormat("en-US", { month: "short" }).format(
+      date
+    );
+    const year = new Intl.DateTimeFormat("en-US", { year: "numeric" }).format(
+      date
+    );
+    const weekday = new Intl.DateTimeFormat("en-US", {
+      weekday: "short",
+    }).format(date);
+
     // Construct the desired format
     return `${day} ${month} ${year}, ${weekday}`;
   };
@@ -437,8 +506,8 @@ const CandidateList = ({ activeTeamId, setAuthenticated ,activeTeamName}) => {
                           : candidate.status === "Selected"
                           ? "#6B79EF"
                           : "#FF5797",
-                      fontSize:'16px',
-                      fontWeight:400
+                      fontSize: "16px",
+                      fontWeight: 400,
                     }}
                   >
                     {candidate.status}
@@ -450,8 +519,8 @@ const CandidateList = ({ activeTeamId, setAuthenticated ,activeTeamName}) => {
                         marginTop: "4px",
                         color: "#6B6B6B",
                         fontStyle: "italic",
-                        fontSize:'16px',
-                        fontWeight:400
+                        fontSize: "16px",
+                        fontWeight: 400,
                       }}
                     >
                       {new Date(candidate.scheduled_time).toLocaleString(
@@ -519,7 +588,6 @@ const CandidateList = ({ activeTeamId, setAuthenticated ,activeTeamName}) => {
                 <TableCell>
                   <Box sx={{ display: "flex", gap: 2 }}>
                     {candidate.status === "Open" && (
-                      Object.keys(timeSlots).length === 0 ?
                       <Button
                         variant="contained"
                         color="warning"
@@ -530,30 +598,10 @@ const CandidateList = ({ activeTeamId, setAuthenticated ,activeTeamName}) => {
                           background: "white",
                           color: "#FF8734",
                           fontWeight: 700,
-                          paddingTop:'10px',
-                          paddingBottom:'10px',
-                          paddingLeft:'12px',
-                          paddingRight:'12px'
-                        }}
-                        onClick={() => requestTimeSlots(candidate)}
-                      >
-                        {timeSlotsLoading ? <CircularProgress size={24} sx={{ color: "orange" }} /> : "Request For Time Slots"}
-                      </Button>
-                      :
-                      <Button
-                        variant="contained"
-                        color="warning"
-                        size="small"
-                        sx={{
-                          textTransform: "none",
-                          borderRadius: "12px",
-                          background: "white",
-                          color: "#FF8734",
-                          fontWeight: 700,
-                          paddingTop:'10px',
-                          paddingBottom:'10px',
-                          paddingLeft:'12px',
-                          paddingRight:'12px'
+                          paddingTop: "10px",
+                          paddingBottom: "10px",
+                          paddingLeft: "12px",
+                          paddingRight: "12px",
                         }}
                         onClick={() => handleScheduleInterview(candidate)}
                       >
@@ -569,15 +617,15 @@ const CandidateList = ({ activeTeamId, setAuthenticated ,activeTeamName}) => {
                           sx={{
                             textTransform: "none",
                             borderRadius: "12px",
-                            fontSize:'12px',
-                            fontWeight:400,
-                            backgroundColor:'#FF8734',
-                            display:'flex',
-                            flexDirection:'column',
-                            paddingTop:'9px',
-                            paddingBottom:'9px',
-                            paddingLeft:'16px',
-                            paddingRight:'16px'
+                            fontSize: "12px",
+                            fontWeight: 400,
+                            backgroundColor: "#FF8734",
+                            display: "flex",
+                            flexDirection: "column",
+                            paddingTop: "9px",
+                            paddingBottom: "9px",
+                            paddingLeft: "16px",
+                            paddingRight: "16px",
                           }}
                           onClick={() => updateStatus(candidate.id, "Selected")}
                         >
@@ -595,16 +643,16 @@ const CandidateList = ({ activeTeamId, setAuthenticated ,activeTeamName}) => {
                           sx={{
                             textTransform: "none",
                             borderRadius: "12px",
-                            fontSize:'12px',
-                            fontWeight:400,
+                            fontSize: "12px",
+                            fontWeight: 400,
                             background: "white",
                             color: "black",
-                            display:'flex',
-                            flexDirection:'column',
-                            paddingTop:'9px',
-                            paddingBottom:'9px',
-                            paddingLeft:'16px',
-                            paddingRight:'16px'
+                            display: "flex",
+                            flexDirection: "column",
+                            paddingTop: "9px",
+                            paddingBottom: "9px",
+                            paddingLeft: "16px",
+                            paddingRight: "16px",
                           }}
                           onClick={() => handleReject(candidate)}
                         >
@@ -626,14 +674,14 @@ const CandidateList = ({ activeTeamId, setAuthenticated ,activeTeamName}) => {
                           sx={{
                             textTransform: "none",
                             borderRadius: "12px",
-                            fontSize:'12px',
-                            fontWeight:400,
-                            display:'flex',
-                            flexDirection:'column',
-                            paddingTop:'9px',
-                            paddingBottom:'9px',
-                            paddingLeft:'16px',
-                            paddingRight:'16px'
+                            fontSize: "12px",
+                            fontWeight: 400,
+                            display: "flex",
+                            flexDirection: "column",
+                            paddingTop: "9px",
+                            paddingBottom: "9px",
+                            paddingLeft: "16px",
+                            paddingRight: "16px",
                           }}
                           onClick={() => updateStatus(candidate.id, "Selected")}
                           disabled
@@ -652,16 +700,16 @@ const CandidateList = ({ activeTeamId, setAuthenticated ,activeTeamName}) => {
                           sx={{
                             textTransform: "none",
                             borderRadius: "12px",
-                            fontSize:'12px',
-                            fontWeight:400,
+                            fontSize: "12px",
+                            fontWeight: 400,
                             background: "white",
                             color: "black",
-                            display:'flex',
-                            flexDirection:'column',
-                            paddingTop:'9px',
-                            paddingBottom:'9px',
-                            paddingLeft:'16px',
-                            paddingRight:'16px'
+                            display: "flex",
+                            flexDirection: "column",
+                            paddingTop: "9px",
+                            paddingBottom: "9px",
+                            paddingLeft: "16px",
+                            paddingRight: "16px",
                           }}
                           onClick={() => handleReject(candidate)}
                           disabled
@@ -683,13 +731,20 @@ const CandidateList = ({ activeTeamId, setAuthenticated ,activeTeamName}) => {
         </Table>
       </TableContainer>
 
-      {/* Modal for Scheduling Interview */}
+      <Pagination
+        count={totalPages}
+        page={currentPage}
+        onChange={handlePageChange}
+        color="primary"
+        // className={styles.custom_pagination}
+      />
+
       <Dialog
         open={openModal}
         onClose={handleCloseModal}
         fullWidth
-        maxWidth="sm" // Adjust width of the modal
-        style={{ maxHeight: "80vh" }} // Ensure modal doesn't exceed viewport height
+        maxWidth="sm"
+        style={{ maxHeight: "80vh" }}
       >
         <DialogTitle
           style={{ color: "#7E97B8", fontSize: "20px", fontWeight: 700 }}
@@ -698,8 +753,8 @@ const CandidateList = ({ activeTeamId, setAuthenticated ,activeTeamName}) => {
         </DialogTitle>
         <DialogContent
           style={{
-            maxHeight: "60vh", // Limit the height of the content area
-            overflowY: "auto", // Enable scrolling when content overflows
+            maxHeight: "60vh",
+            overflowY: "auto",
           }}
         >
           <div style={{ color: "#7E97B8", fontSize: "16px", fontWeight: 400 }}>
@@ -720,10 +775,60 @@ const CandidateList = ({ activeTeamId, setAuthenticated ,activeTeamName}) => {
           {loading ? (
             <CircularProgress />
           ) : error ? (
-            // <p>{error}</p>
-            <p>No available time slots for the candidate {selectedCandidate?.name}.</p>
+            <p>
+              No available time slots for the candidate{" "}
+              {selectedCandidate?.name}.
+              <Button
+                variant="contained"
+                color="warning"
+                size="small"
+                sx={{
+                  textTransform: "none",
+                  borderRadius: "12px",
+                  background: "white",
+                  color: "#FF8734",
+                  fontWeight: 700,
+                  paddingTop: "10px",
+                  paddingBottom: "10px",
+                  paddingLeft: "12px",
+                  paddingRight: "12px",
+                }}
+                onClick={() => requestTimeSlots(selectedCandidate)}
+              >
+                {timeSlotsLoading ? (
+                  <CircularProgress size={24} sx={{ color: "orange" }} />
+                ) : (
+                  "Request For Time Slots"
+                )}
+              </Button>
+            </p>
           ) : Object.keys(timeSlots).length === 0 ? (
-            <p>No available time slots.</p>
+            <>
+              <p>No available time slots.</p>
+              <Button
+                variant="contained"
+                color="warning"
+                size="small"
+                sx={{
+                  textTransform: "none",
+                  borderRadius: "12px",
+                  background: "white",
+                  color: "#FF8734",
+                  fontWeight: 700,
+                  paddingTop: "10px",
+                  paddingBottom: "10px",
+                  paddingLeft: "12px",
+                  paddingRight: "12px",
+                }}
+                onClick={() => requestTimeSlots(selectedCandidate)}
+              >
+                {timeSlotsLoading ? (
+                  <CircularProgress size={24} sx={{ color: "orange" }} />
+                ) : (
+                  "Request For Time Slots"
+                )}
+              </Button>
+            </>
           ) : (
             Object.entries(timeSlots).map(([date, slots]) => (
               <div key={date} style={{ marginTop: "1rem" }}>
@@ -797,11 +902,16 @@ const CandidateList = ({ activeTeamId, setAuthenticated ,activeTeamName}) => {
               borderRadius: "12px",
               border: "none",
               width: "100%",
-              backgroundColor: "#F15D27",
-              color: "#FBFCFE",
+              backgroundColor:
+                Object.keys(timeSlots).length === 0 ? "#E0E0E0" : "#F15D27",
+              color:
+                Object.keys(timeSlots).length === 0 ? "#A0A0A0" : "#FBFCFE",
               fontSize: "16px",
               fontWeight: 700,
+              cursor:
+                Object.keys(timeSlots).length === 0 ? "not-allowed" : "pointer",
             }}
+            disabled={Object.keys(timeSlots).length === 0}
           >
             Schedule
           </Button>
