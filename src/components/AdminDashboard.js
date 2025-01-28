@@ -57,7 +57,7 @@ const AdminDashboard = ({ setAuthenticated, activeRole }) => {
 
   const [searchQuery, setSearchQuery] = useState("");
   const [filteredCandidates, setFilteredCandidates] = useState([candidates]);
-  console.log(filteredCandidates,'filteredCandidatessdfsdfsdf');
+  console.log(filteredCandidates,'filteredCandidatessdfsdfsdf',searchQuery);
 
   const handleSearch = (query) => {
     setSearchQuery(query);
