@@ -916,7 +916,7 @@ const CandidateList = ({ activeTeamId, setAuthenticated, activeTeamName }) => {
               border: "none",
               width: "100%",
               backgroundColor:
-                Object.keys(timeSlots).length === 0 ? "#E0E0E0" : "#F15D27",
+                Object.keys(timeSlots).length === 0 ? "#E0E0E0" : "#FF8734",
               color:
                 Object.keys(timeSlots).length === 0 ? "#A0A0A0" : "#FBFCFE",
               fontSize: "16px",

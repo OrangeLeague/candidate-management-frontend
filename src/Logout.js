@@ -34,7 +34,7 @@ const Logout = ({ setAuthenticated }) => {
         border: "2px solid white",
         padding: "12px 16px", // Combines padding-top, padding-right, padding-bottom, padding-left.
         background:'white',
-        color:"#F15D27",
+        color:"#FF8734",
         fontWeight:700,
         fontSize:'16px',
         cursor:'pointer'

@@ -80,7 +80,7 @@ const App = () => {
                       display: "flex",
                       alignItems: "center",
                       background: "white",
-                      color: "#F15D27",
+                      color: "#FF8734",
                       fontWeight: 700,
                       fontSize: "16px",
                       cursor: "pointer",

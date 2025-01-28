@@ -272,7 +272,7 @@ import {
 import dayjs from "dayjs";
 import { useParams } from "react-router-dom";
 import axios from "axios";
-import img from '../assests/comp_logo.png';
+import img from "../assests/comp_logo.png";
 
 const CandidateScreen = () => {
   const { id } = useParams();
@@ -280,7 +280,6 @@ const CandidateScreen = () => {
   // const [currentWeek, setCurrentWeek] = useState(dayjs());
   const [selectedDate, setSelectedDate] = useState(dayjs());
   const [candidateName, setCandidateName] = useState("");
-
   // const getCandidateName = async () => {
   //   try {
   //     const response = await axios.get(
@@ -316,7 +315,7 @@ const CandidateScreen = () => {
     if (id) {
       getCandidateName();
     }
-  }, [id,getCandidateName]);
+  }, [id, getCandidateName]);
 
   const timeSlots = [
     "1st half",
@@ -390,16 +389,50 @@ const CandidateScreen = () => {
     }
   };
 
+  // Fetch time slots from backend
+  useEffect(() => {
+    const fetchTimeSlots = async () => {
+      try {
+        const response = await axios.get(
+          `https://candidate-management-backend-1.onrender.com/candidates/get-candidates/${id}/time-slots/`
+        );
+        // setSelectedSlots(response.data.time_slots || {});
+        const timeSlots = response.data.time_slots || [];
+        console.log(timeSlots, "timeSlotssdsdsdsd");
+        setSelectedSlots(timeSlots);
+      } catch (err) {
+        // setError(
+        //   err.response?.data?.message ||
+        //     "An error occurred while fetching time slots."
+        // );
+      }
+    };
+
+    if (id) {
+      fetchTimeSlots();
+    }
+  },[id]);
+
   return (
     <Container
       maxWidth="md"
       sx={{ marginTop: 4, padding: 3, background: "#f9f9f9", borderRadius: 2 }}
     >
-      <div style={{backgroundColor:'#F6F6F6',display:'flex',alignItems:'center'}}>
-            <img src={img} alt="img" style={{width:'80px',height:'80px'}}/>
-            {/* <div style={{color:'#F15D27',fontWeight:700,fontSize:'24px'}}>Orange League</div> */}
-        </div>
-      <Typography sx={{marginBottom:'20px',fontSize:'16px',fontWeight:600}}>Please select the time solts that you were available for interview</Typography>
+      <div
+        style={{
+          backgroundColor: "#F6F6F6",
+          display: "flex",
+          alignItems: "center",
+        }}
+      >
+        <img src={img} alt="img" style={{ width: "80px", height: "80px" }} />
+        {/* <div style={{color:'#F15D27',fontWeight:700,fontSize:'24px'}}>Orange League</div> */}
+      </div>
+      <Typography
+        sx={{ marginBottom: "20px", fontSize: "16px", fontWeight: 600 }}
+      >
+        Please select the time solts that you were available for interview
+      </Typography>
       <Box mb={3}>
         <TextField
           fullWidth
