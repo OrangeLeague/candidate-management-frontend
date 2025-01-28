@@ -385,7 +385,7 @@ const AdminDashboard = ({ setAuthenticated, activeRole }) => {
                   fontSize: "16px",
                   fontWeight: 600,
                   minWidth: "100px",
-                  color: "#9c9c9c",
+                  // color: "#FF8734",
                   transition: "all 0.3s ease",
                 },
                 "& .Mui-selected": {
@@ -403,6 +403,7 @@ const AdminDashboard = ({ setAuthenticated, activeRole }) => {
                   borderRadius: "16px",
                   padding: "8px 24px",
                   margin: "6px 2px",
+                  color:'#FF8734'
                 },
                 "& .MuiTab-root:not(.Mui-selected)": {
                   margin: "8px 2px",
