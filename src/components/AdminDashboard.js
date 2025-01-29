@@ -249,6 +249,7 @@ const AdminDashboard = ({ setAuthenticated, activeRole }) => {
       formData.append("name", candidate.name);
       formData.append("years_of_experience", candidate.years_of_experience);
       formData.append("skillset", candidate.skillset);
+      formData.append("email", candidate.email);
       formData.append("status", candidate.status);
       formData.append("notice_period", candidate.notice_period);
       formData.append("current_company", candidate.current_company);
